@@ -3334,6 +3334,15 @@ mch_expand_wildcards(num_pat, pat, num_file, file, flags)
     if (!have_wildcard(num_pat, pat))
 	return save_patterns(num_pat, pat, num_file, file);
 
+    /*
+     * Don't allow the use of backticks in secure and restricted mode.
+     */
+    if (secure || restricted)
+	for (i = 0; i < num_pat; ++i)
+	    if (vim_strchr(pat[i], '`') != NULL
+		    && (check_restricted() || check_secure()))
+		return FAIL;
+
 /*
  * get a name for the temp file
  */

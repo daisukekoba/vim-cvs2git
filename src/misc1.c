@@ -5695,6 +5695,9 @@ get_cmd_output(cmd, flags)
     int		i = 0;
     FILE	*fd;
 
+    if (check_restricted() || check_secure())
+	return NULL;
+
     /* get a name for the temp file */
     if ((tempname = vim_tempname('o')) == NULL)
     {
