@@ -78,6 +78,7 @@ static void highlight_list_one __ARGS((int id));
 static int highlight_list_arg __ARGS((int id, int didh, int type, int iarg, char_u *sarg, char *name));
 static int syn_add_group __ARGS((char_u *name));
 static int syn_list_header __ARGS((int did_header, int outlen, int id));
+static int hl_has_settings __ARGS((int idx, int check_link));
 static void highlight_clear __ARGS((int idx));
 
 #ifdef USE_GUI
@@ -4841,6 +4842,7 @@ do_highlight(line, forceit, init)
     int		attr;
     int		id;
     int		idx;
+    int		dodefault = FALSE;
     int		doclear = FALSE;
     int		dolink = FALSE;
     int		error = FALSE;
@@ -4867,6 +4869,17 @@ do_highlight(line, forceit, init)
      */
     name_end = skiptowhite(line);
     linep = skipwhite(name_end);
+
+    /*
+     * Check for "default" argument.
+     */
+    if (STRNCMP(line, "default", name_end - line) == 0)
+    {
+	dodefault = TRUE;
+	line = linep;
+	name_end = skiptowhite(line);
+	linep = skipwhite(name_end);
+    }
 
     if (STRNCMP(line, "clear", name_end - line) == 0)
 	doclear = TRUE;
@@ -4927,14 +4940,9 @@ do_highlight(line, forceit, init)
 	     * for the group, unless '!' is used
 	     */
 	    if (to_id > 0 && !forceit && !init
-		    &&	  (HL_TABLE()[from_id - 1].sg_term_attr != 0
-			|| HL_TABLE()[from_id - 1].sg_cterm_attr != 0
-#ifdef USE_GUI
-			|| HL_TABLE()[from_id - 1].sg_gui_attr != 0
-#endif
-		       ))
+				   && hl_has_settings(from_id - 1, dodefault))
 	    {
-		if (sourcing_name == NULL)
+		if (sourcing_name == NULL && !dodefault)
 		    EMSG("group has settings, highlight link ignored");
 	    }
 	    else
@@ -4971,6 +4979,11 @@ do_highlight(line, forceit, init)
     if (id == 0)			/* failed (out of memory) */
 	return;
     idx = id - 1;			/* index is ID minus one */
+
+    /* Return if "default" was used and the group already has settings. */
+    if (dodefault && hl_has_settings(idx, TRUE))
+	return;
+
     if (STRCMP(HL_TABLE()[idx].sg_name_u, "NORMAL") == 0)
 	is_normal_group = TRUE;
 #ifdef USE_GUI_X11
@@ -5473,6 +5486,24 @@ do_highlight(line, forceit, init)
     /* Only call highlight_changed() once, after sourcing a syntax file */
     need_highlight_changed = TRUE;
 }
+
+/*
+ * Return TRUE if highlight group "idx" has any settings.
+ * When "check_link" is TRUE also check for an existing link.
+ */
+    static int
+hl_has_settings(idx, check_link)
+    int		idx;
+    int		check_link;
+{
+    return (   HL_TABLE()[idx].sg_term_attr != 0
+	    || HL_TABLE()[idx].sg_cterm_attr != 0
+#ifdef FEAT_GUI
+	    || HL_TABLE()[idx].sg_gui_attr != 0
+#endif
+	    || (check_link && (HL_TABLE()[idx].sg_set & SG_LINK)));
+}
+
 
 /*
  * Clear highlighting for one group.
