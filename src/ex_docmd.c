@@ -1350,9 +1350,13 @@ do_one_cmd(cmdlinep, sourcing,
 
     /*
      * Accept buffer name.  Cannot be used at the same time with a buffer
-     * number.
+     * number.  Don't do this for a user command.
      */
-    if ((ea.argt & BUFNAME) && *ea.arg && ea.addr_count == 0)
+    if ((ea.argt & BUFNAME) && *ea.arg && ea.addr_count == 0
+#ifdef USER_COMMANDS
+	    && ea.cmdidx != CMD_USER
+#endif
+	    )
     {
 	/*
 	 * :bdelete and :bunload take several arguments, separated by spaces:
