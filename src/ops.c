@@ -3940,6 +3940,10 @@ do_addsub(command, Prenum1)
 	--length;
     }
 
+    /* truncate to max length of a number */
+    if (length >= NUMBUFLEN - 1)
+	length = NUMBUFLEN - 2;
+
     /*
      * Put the number characters in buf2[].
      */
