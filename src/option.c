@@ -3855,7 +3855,11 @@ set_bool_option(opt_idx, varp, value)
      * in secure mode, setting of the secure option is not
      * allowed
      */
-    if (secure && (int *)varp == &p_secure)
+    if ((secure
+#ifdef HAVE_SANDBOX
+		|| sandbox != 0
+#endif
+		) && (int *)varp == &p_secure)
 	return (char_u *)"not allowed here";
 
 #ifdef USE_GUI

@@ -222,6 +222,15 @@ edit(cmdchar, startln, count)
      * error message */
     check_for_delay(TRUE);
 
+#ifdef HAVE_SANDBOX
+    /* Don't allow inserting in the sandbox. */
+    if (sandbox != 0)
+    {
+	EMSG(e_sandbox);
+	return FALSE;
+    }
+#endif
+
 #ifdef INSERT_EXPAND
     ins_compl_clear();	    /* clear stuff for ctrl-x mode */
 #endif

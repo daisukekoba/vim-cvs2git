@@ -319,6 +319,14 @@ EXTERN int	secure INIT(= FALSE);
 				 * allowed, e.g. when sourcing .exrc or .vimrc
 				 * in current directory */
 
+#if defined(STATUSLINE) && defined(WANT_EVAL)
+# define HAVE_SANDBOX
+EXTERN int	sandbox INIT(= 0);
+				/* non-zero when evaluating an expression in a
+				 * "sandbox".  Not allowed to change the
+				 * buffer. */
+#endif
+
 EXTERN int	silent_mode INIT(= FALSE);
 				/* set to TRUE when "-s" commandline argument
 				 * used for ex */
@@ -779,6 +787,9 @@ EXTERN char_u e_readonlyvar[]	INIT(="Cannot set read-only variable \"%s\"");
 #endif
 #ifdef QUICKFIX
 EXTERN char_u e_readerrf[]	INIT(="Error while reading errorfile");
+#endif
+#ifdef HAVE_SANDBOX
+EXTERN char_u e_sandbox[]	INIT(="Not allowed in sandbox");
 #endif
 EXTERN char_u e_scroll[]	INIT(="Invalid scroll size");
 EXTERN char_u e_tagformat[]	INIT(="Format error in tags file \"%s\"");
