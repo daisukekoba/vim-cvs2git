@@ -1203,8 +1203,11 @@ $VIMRUNTIME	options.txt	/*$VIMRUNTIME*
 :helpf	various.txt	/*:helpf*
 :helpfind	various.txt	/*:helpfind*
 :hi	syntax.txt	/*:hi*
+:hi-normal	syntax.txt	/*:hi-normal*
+:hi-normal-cterm	syntax.txt	/*:hi-normal-cterm*
 :hide	windows.txt	/*:hide*
 :highlight	syntax.txt	/*:highlight*
+:highlight-default	syntax.txt	/*:highlight-default*
 :highlight-link	syntax.txt	/*:highlight-link*
 :history	cmdline.txt	/*:history*
 :history-indexing	cmdline.txt	/*:history-indexing*
@@ -2037,6 +2040,7 @@ Syntax	autocmd.txt	/*Syntax*
 T	motion.txt	/*T*
 TCL	if_tcl.txt	/*TCL*
 TERM	starting.txt	/*TERM*
+TTpro-telnet	syntax.txt	/*TTpro-telnet*
 Tab	intro.txt	/*Tab*
 Tcl	if_tcl.txt	/*Tcl*
 TermChanged	autocmd.txt	/*TermChanged*
@@ -2192,6 +2196,7 @@ a	insert.txt	/*a*
 abandon	editing.txt	/*abandon*
 abbreviations	map.txt	/*abbreviations*
 active-buffer	windows.txt	/*active-buffer*
+ada.vim	syntax.txt	/*ada.vim*
 add-option-flags	options.txt	/*add-option-flags*
 added-5.1	version5.txt	/*added-5.1*
 added-5.2	version5.txt	/*added-5.2*
@@ -2200,6 +2205,7 @@ added-5.4	version5.txt	/*added-5.4*
 added-5.5	version5.txt	/*added-5.5*
 added-5.6	version5.txt	/*added-5.6*
 added-5.7	version5.txt	/*added-5.7*
+added-5.8	version5.txt	/*added-5.8*
 added-BeOS	version5.txt	/*added-BeOS*
 added-Mac	version5.txt	/*added-Mac*
 added-VMS	version5.txt	/*added-VMS*
@@ -2220,6 +2226,7 @@ arglist-quit	editing.txt	/*arglist-quit*
 argument-list	editing.txt	/*argument-list*
 argv()	eval.txt	/*argv()*
 asm.vim	syntax.txt	/*asm.vim*
+asm68k	syntax.txt	/*asm68k*
 asmh8300.vim	syntax.txt	/*asmh8300.vim*
 athena-intellimouse	gui.txt	/*athena-intellimouse*
 attr-list	syntax.txt	/*attr-list*
@@ -2363,6 +2370,7 @@ changed-5.4	version5.txt	/*changed-5.4*
 changed-5.5	version5.txt	/*changed-5.5*
 changed-5.6	version5.txt	/*changed-5.6*
 changed-5.7	version5.txt	/*changed-5.7*
+changed-5.8	version5.txt	/*changed-5.8*
 changing	change.txt	/*changing*
 char2nr()	eval.txt	/*char2nr()*
 character-encode-scheme	multibyte.txt	/*character-encode-scheme*
@@ -2453,6 +2461,8 @@ cursor_left	intro.txt	/*cursor_left*
 cursor_right	intro.txt	/*cursor_right*
 cursor_up	intro.txt	/*cursor_up*
 cw	change.txt	/*cw*
+cweb.vim	syntax.txt	/*cweb.vim*
+cynlib.vim	syntax.txt	/*cynlib.vim*
 d	change.txt	/*d*
 daB	motion.txt	/*daB*
 daW	motion.txt	/*daW*
@@ -2632,6 +2642,7 @@ fixed-5.4	version5.txt	/*fixed-5.4*
 fixed-5.5	version5.txt	/*fixed-5.5*
 fixed-5.6	version5.txt	/*fixed-5.6*
 fixed-5.7	version5.txt	/*fixed-5.7*
+fixed-5.8	version5.txt	/*fixed-5.8*
 fnamemodify()	eval.txt	/*fnamemodify()*
 fo-table	change.txt	/*fo-table*
 font-sizes	gui_x11.txt	/*font-sizes*
@@ -2709,6 +2720,7 @@ greek	options.txt	/*greek*
 grep	tagsearch.txt	/*grep*
 group-name	syntax.txt	/*group-name*
 gs	various.txt	/*gs*
+gsp.vim	syntax.txt	/*gsp.vim*
 gstar	pattern.txt	/*gstar*
 gtk-tooltip-colors	gui_x11.txt	/*gtk-tooltip-colors*
 gu	change.txt	/*gu*
@@ -2842,6 +2854,7 @@ hpterm	term.txt	/*hpterm*
 hpterm-color	syntax.txt	/*hpterm-color*
 html-editing	tips.txt	/*html-editing*
 html.vim	syntax.txt	/*html.vim*
+htmlos.vim	syntax.txt	/*htmlos.vim*
 i	insert.txt	/*i*
 i_0_CTRL-D	insert.txt	/*i_0_CTRL-D*
 i_<BS>	insert.txt	/*i_<BS>*
@@ -2924,6 +2937,7 @@ i_^_CTRL-D	insert.txt	/*i_^_CTRL-D*
 i_backspacing	insert.txt	/*i_backspacing*
 i_digraph	digraph.txt	/*i_digraph*
 i_esc	intro.txt	/*i_esc*
+ia64.vim	syntax.txt	/*ia64.vim*
 iccf	uganda.txt	/*iccf*
 icon-changed	version4.txt	/*icon-changed*
 iconise	starting.txt	/*iconise*
@@ -2942,6 +2956,7 @@ improvements	version5.txt	/*improvements*
 inactive-buffer	windows.txt	/*inactive-buffer*
 include-search	tagsearch.txt	/*include-search*
 index.txt	index.txt	/*index.txt*
+inform.vim	syntax.txt	/*inform.vim*
 initialization	starting.txt	/*initialization*
 input()	eval.txt	/*input()*
 ins-completion	insert.txt	/*ins-completion*
@@ -2960,6 +2975,7 @@ inserting	insert.txt	/*inserting*
 inserting-ex	insert.txt	/*inserting-ex*
 inserting-file	insert.txt	/*inserting-file*
 install-registry	gui_w32.txt	/*install-registry*
+intel-itanium	syntax.txt	/*intel-itanium*
 intellimouse-wheel-problems	gui_w32.txt	/*intellimouse-wheel-problems*
 interfaces-5.2	version5.txt	/*interfaces-5.2*
 internal-variables	eval.txt	/*internal-variables*
@@ -3141,6 +3157,7 @@ not-edited	editing.txt	/*not-edited*
 notation	intro.txt	/*notation*
 notepad	gui_w32.txt	/*notepad*
 nr2char()	eval.txt	/*nr2char()*
+nroff.vim	syntax.txt	/*nroff.vim*
 o	insert.txt	/*o*
 object-motions	motion.txt	/*object-motions*
 object-select	motion.txt	/*object-select*
@@ -3181,6 +3198,7 @@ page-up	intro.txt	/*page-up*
 page_down	intro.txt	/*page_down*
 page_up	intro.txt	/*page_up*
 paragraph	motion.txt	/*paragraph*
+pascal.vim	syntax.txt	/*pascal.vim*
 pattern	pattern.txt	/*pattern*
 pattern-searches	pattern.txt	/*pattern-searches*
 pattern.txt	pattern.txt	/*pattern.txt*
@@ -3206,13 +3224,17 @@ perl-editing	if_perl.txt	/*perl-editing*
 perl-overview	if_perl.txt	/*perl-overview*
 perl-using	if_perl.txt	/*perl-using*
 perl.vim	syntax.txt	/*perl.vim*
+php.vim	syntax.txt	/*php.vim*
 php3.vim	syntax.txt	/*php3.vim*
 phtml.vim	syntax.txt	/*phtml.vim*
 popup-menu	gui.txt	/*popup-menu*
 popup-menu-added	version5.txt	/*popup-menu-added*
 ports-5.2	version5.txt	/*ports-5.2*
 postscr.vim	syntax.txt	/*postscr.vim*
+ppwiz.vim	syntax.txt	/*ppwiz.vim*
+press-return	message.txt	/*press-return*
 printcap-syntax	syntax.txt	/*printcap-syntax*
+progress.vim	syntax.txt	/*progress.vim*
 ptcap.vim	syntax.txt	/*ptcap.vim*
 put	change.txt	/*put*
 python	if_python.txt	/*python*
@@ -3310,6 +3332,7 @@ riscos-porting	os_riscos.txt	/*riscos-porting*
 riscos-remote	os_riscos.txt	/*riscos-remote*
 riscos-shell	os_riscos.txt	/*riscos-shell*
 riscos-temp-files	os_riscos.txt	/*riscos-temp-files*
+rot13	change.txt	/*rot13*
 ruby.vim	syntax.txt	/*ruby.vim*
 rview	starting.txt	/*rview*
 rvim	starting.txt	/*rvim*
@@ -3342,6 +3365,7 @@ sentence	motion.txt	/*sentence*
 session-file	options.txt	/*session-file*
 set-option	options.txt	/*set-option*
 setline()	eval.txt	/*setline()*
+sgml.vim	syntax.txt	/*sgml.vim*
 sh.vim	syntax.txt	/*sh.vim*
 shell-window	tips.txt	/*shell-window*
 shell_error-variable	eval.txt	/*shell_error-variable*
@@ -3550,6 +3574,7 @@ t_vi	term.txt	/*t_vi*
 t_vs	term.txt	/*t_vs*
 t_xs	term.txt	/*t_xs*
 tab	intro.txt	/*tab*
+tag	tagsearch.txt	/*tag*
 tag-!	tagsearch.txt	/*tag-!*
 tag-any-white	tagsearch.txt	/*tag-any-white*
 tag-binary-search	tagsearch.txt	/*tag-binary-search*
@@ -3774,6 +3799,7 @@ version-5.4	version5.txt	/*version-5.4*
 version-5.5	version5.txt	/*version-5.5*
 version-5.6	version5.txt	/*version-5.6*
 version-5.7	version5.txt	/*version-5.7*
+version-5.8	version5.txt	/*version-5.8*
 version-variable	eval.txt	/*version-variable*
 version4.txt	version4.txt	/*version4.txt*
 version5.txt	version5.txt	/*version5.txt*
@@ -3790,6 +3816,7 @@ vim-mac	intro.txt	/*vim-mac*
 vim-modes	intro.txt	/*vim-modes*
 vim-modes-intro	intro.txt	/*vim-modes-intro*
 vim-multibyte	intro.txt	/*vim-multibyte*
+vim-online	intro.txt	/*vim-online*
 vim-script-intro	starting.txt	/*vim-script-intro*
 vim:	options.txt	/*vim:*
 vimdev	intro.txt	/*vimdev*

@@ -1,4 +1,4 @@
-*options.txt*   For Vim version 5.7.  Last change: 2000 Jun 07
+*options.txt*   For Vim version 5.8.  Last change: 2001 Feb 27
 
 
 		  VIM REFERENCE MANUAL    by Bram Moolenaar
@@ -569,6 +569,9 @@ A jump table for the options with a short description can be found at |X_op|.
 	look good on a light background.  Any other value is illegal.
 	Vim tries to set the default value according to the terminal used.
 	This will not always be correct.
+	Setting this option does not change the background color, it tells Vim
+	what the backround color looks like.  For changing the background
+	color, see |:hi-normal|.
 	When starting the GUI, the default value for 'background' will be
 	"light".  When the value is not set in the .gvimrc, and Vim detects
 	that the background is actually quite dark, 'background' is set to
@@ -921,7 +924,7 @@ A jump table for the options with a short description can be found at |X_op|.
 
 						*'complete'* *'cpt'*
 'complete' 'cpt'	string	(default: ".,w,b,u,t,i")
-			global
+			local to buffer
 			{not in Vi}
 	This option specifies how keyword completion |ins-completion| works
 	when CTRL-P or CTRL-N are used.  It indicates the type of completion
@@ -976,7 +979,7 @@ A jump table for the options with a short description can be found at |X_op|.
 	When on direct console I/O is used to obtain a keyboard character.
 	This should work in most cases.  Also see |'bioskey'|.  Together,
 	three methods of console input are available:
-	'conskey'   'bioskey'	    action
+	'conskey'   'bioskey'	    action ~
 	   on	     on or off	    direct console input
 	   off		on	    BIOS
 	   off		off	    STDIN
@@ -1867,7 +1870,7 @@ A jump table for the options with a short description can be found at |X_op|.
 				     e:ErrorMsg,i:IncSearch,l:Search,m:MoreMsg,
 				     M:ModeMsg,n:LineNr,r:Question,
 				     s:StatusLine,S:StatusLineNC,t:Title,
-				     v:Visual,w:WarningMsg")
+				     v:Visual,w:WarningMsg,W:WildMenu")
 			global
 			{not in Vi}
 	This option can be used to set highlighting mode for various
@@ -1895,6 +1898,7 @@ A jump table for the options with a short description can be found at |X_op|.
 			    Selection" Only X11 Gui's |gui-x11| and
 			    |xterm-clipboard|.
 	|hl-WarningMsg|	 w  warning messages
+	|hl-WildMenu|	 W  wildcard matches displayed for 'wildmenu'
 
 	The display modes are:
 		r	reverse		(termcap entry "mr" and "me")
@@ -2607,6 +2611,7 @@ A jump table for the options with a short description can be found at |X_op|.
 	wrapping lines to mix with the line numbers, set the 'showbreak'
 	option to eight spaces:
 		:set showbreak=\ \ \ \ \ \ \ \ 
+	See |hl-LineNr| for the highlighting used for the number.
 
 					*'osfiletype'* *'oft'*
 'osfiletype' 'oft'	string (RISC OS default: "Text",
@@ -2712,43 +2717,43 @@ A jump table for the options with a short description can be found at |X_op|.
 			global
 			{not in Vi}
 	This is a list of directories which will be searched when using the
-	gf, [f, ]f, ^Wf and other commands, provided that the file being
-	searched for has a relative path (not starting with '/').  The
+	|gf|, [f, ]f, ^Wf, |:find| and other commands, provided that the file
+	being searched for has a relative path (not starting with '/').  The
 	directories in the 'path' option may be relative or absolute.
 	- Use commas to separate directory names:
-		:set path=.,/usr/local/include,/usr/include
+>		:set path=.,/usr/local/include,/usr/include
 	- Spaces can also be used to separate directory names (for backwards
 	  compatibility with version 3.0).  To have a space in a directory
 	  name, precede it with an extra backslash, and escape the space:
-		:set path=.,/dir/with\\\ space
+>		:set path=.,/dir/with\\\ space
 	- To include a comma in a directory name precede it with an extra
 	  backslash:
-		:set path=.,/dir/with\\,comma
-	- To search relative to the directory where the current file is use
-		:set path=.
+>		:set path=.,/dir/with\\,comma
+	- To search relative to the directory of the current file, use:
+>		:set path=.
 	- To search in the current directory use an empty string between two
 	  commas:
-		:set path=,,
+>		:set path=,,
 	- A directory name may end in a ':' or '/'.
 	- Environment variables are expanded |:set_env|.
 	- Use wildcards to specify directories more freely, e.g.,
-		:set path=/usr/include/*
+>		:set path=/usr/include/*
 	  means all subdirectories in /usr/include (but not /usr/include
 	  itself).
 	- Use '**' if you want the whole subtree to be searched:
-		:set path=/home/user_x/src/**
+>		:set path=/home/user_x/src/**
 	  means search in the whole subtree under "/home/usr_x/src". (to avoid
 	  endless recursion, the depth is restricted to 100 levels)
 	- Give wildcards and recursions in any order:
-		:set path=/**/include/**
+>		:set path=/**/include/**
 	  specifies a path with at least one directory /include/ in it.
 	- The set of allowed wildcards and the possible usage depend on the
 	  operating system, but /etc/*/etc and /etc/**/etc work on any
 	  system. |:_%<|
 	- Careful with '\' characters, type two to get one in the option:
-		:set path=.,c:\\include
+>		:set path=.,c:\\include
 	  Or just use '/' instead:
-		:set path=.,c:/include
+>		:set path=.,c:/include
 	Don't forget "." or files won't even be found in the same directory as
 	the file!
 	The maximum length is limited.  How much depends on the system, mostly
@@ -2758,9 +2763,9 @@ A jump table for the options with a short description can be found at |X_op|.
 	The use of |:set+=| and |:set-=| is preferred when adding or removing
 	directories from the list.  This avoids problems when a future version
 	uses another default.  To remove the current directory use:
-		:set path-=
+>		:set path-=
 	To add the current directory use:
-		:set path+=
+>		:set path+=
 	To use an environment variable, you probably need to replace the
 	separator.  Here is an example to append $INCL, in which directory
 	names are separated with a semi-colon:
@@ -2951,6 +2956,7 @@ A jump table for the options with a short description can be found at |X_op|.
 			   scrolled to keep the same relative offset.  When
 			   going back to the other window, it still uses the
 			   same relative offset.
+	Also see |scroll-binding|.
 
 						*'sections'* *'sect'*
 'sections' 'sect'		string	(default "SHNHH HUnhsh")
@@ -3551,9 +3557,9 @@ A jump table for the options with a short description can be found at |X_op|.
 	Files with these suffixes get a lower priority when multiple files
 	match a wildcard.  See |suffixes|.  Commas can be used to separate the
 	suffixes.  Spaces after the comma are ignored.  A dot is also seen as
-	the start of a suffix.  To include a dot or comma in a suffix, precede
-	it with a backslash (see |option-backslash| about including spaces and
-	backslashes).
+	the start of a suffix.  To avoid a dot or comma being recognized as a
+	separator, precede it with a backslash (see |option-backslash| about
+	including spaces and backslashes).
 	See 'wildignore' for completely ignoring files.
 	The use of |:set+=| and |:set-=| is preferred when adding or removing
 	suffixes from the list.  This avoids problems when a future version
@@ -3573,6 +3579,7 @@ A jump table for the options with a short description can be found at |X_op|.
 	When 'swapfile' is reset, the swap file for the current buffer is
 	immediately deleted.  When 'swapfile' is set, and 'updatecount' is
 	non-zero, a swap file is immediately created.
+	Also see |swap-file| and |'swapsync'|.
 
 						*'swapsync'* *'sws'*
 'swapsync' 'sws'	string	(default "fsync")
@@ -3637,19 +3644,19 @@ A jump table for the options with a short description can be found at |X_op|.
 	Note: Setting 'tabstop' to any other value than 8 can make your file
 	appear wrong in many places (e.g., when printing it).
 
-	There are three main ways to use tabs in Vim:
+	There are four main ways to use tabs in Vim:
 	1. Always keep 'tabstop' at 8, set 'softtabstop' and 'shiftwidth' to 4
-	   (or 3 or whatever you prefer) and use 'noexpandtabs'.  Then Vim
+	   (or 3 or whatever you prefer) and use 'noexpandtab'.  Then Vim
 	   will use a mix of tabs and spaces, but typing Tab and BS will
 	   behave like a tab appears every 4 (or 3) characters.
 	2. Set 'tabstop' and 'shiftwidth' to whatever you prefer and use
-	   'expandtabs'.  This way you will always insert spaces.  The
+	   'expandtab'.  This way you will always insert spaces.  The
 	   formatting will never be messed up when 'tabstop' is changed.
 	3. Set 'tabstop' and 'shiftwidth' to whatever you prefer and use a
 	   |modeline| to set these values when editing the file again.  Only
 	   works when using Vim to edit the file.
 	4. Always set 'tabstop' and 'shiftwidth' to the same value, and
-	   'noexpandtabs'.  This should then work (for initial indents only)
+	   'noexpandtab'.  This should then work (for initial indents only)
 	   for any tabstop setting that people use.  It might be nice to have
 	   tabs after the first non-blank inserted as spaces if you do this
 	   though.  Otherwise aligned comments will be wrong when 'tabstop' is
@@ -4016,6 +4023,7 @@ A jump table for the options with a short description can be found at |X_op|.
 							*dec-mouse*
 	   dec		DEC terminal mouse handling.  The mouse generates a
 			rather complex sequence, starting with "<Esc>[".
+
 	The mouse handling must be enabled at compile time |+mouse_xterm|
 	|+mouse_dec| |+mouse_netterm|.
 	Only "xterm"(2) is really recognized.  NetTerm mouse codes are always
@@ -4243,9 +4251,10 @@ A jump table for the options with a short description can be found at |X_op|.
 			global
 			{not in Vi}
 	Character you have to type to start wildcard expansion in the
-	command-line.
-	The character is not recognized when used inside a macro.  Although
-	'wc' is a number option, you can set it to a special key:
+	command-line, as specified with 'wildmode'.
+	The character is not recognized when used inside a macro.  See
+	'wildcharm' for that.
+	Although 'wc' is a number option, you can set it to a special key:
 >		:set wc=<Esc>
 	NOTE: This option is set to the Vi default value when 'compatible' is
 	set and to the Vim default value when 'compatible' is reset.

@@ -1,4 +1,4 @@
-*os_vms.txt*    For Vim version 5.7   Last change: 2000 Jun 20
+*os_vms.txt*    For Vim version 5.8   Last change: 2001 May 18
 
 
 		  VIM REFERENCE MANUAL
@@ -321,15 +321,7 @@ Terminal entry not found in termcap
 'unknown-terminal' not known. Available built-in terminals are:
     builtin_gui
     builtin_riscos
-    builtin_amiga
-    builtin_beos-ansi
-    builtin_ansi
-    builtin_vt320
-    builtin_vt52
-    builtin_pcansi
-    builtin_win32
-    builtin_xterm
-    builtin_iris-ansi
+    [...]
     builtin_debug
     builtin_dumb
 defaulting to 'vt320'

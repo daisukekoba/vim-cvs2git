@@ -29,6 +29,9 @@
 static void mainerr __ARGS((int, char_u *));
 static void main_msg __ARGS((char *s));
 static void usage __ARGS((void));
+#if defined(UNIX) || defined(VMS)
+static int file_owned __ARGS((char *fname));
+#endif
 static int get_number_arg __ARGS((char_u *p, int *idx, int def));
 
 /*
@@ -212,6 +215,31 @@ usage()
 #endif
     mch_windexit(1);
 }
+
+#if defined(UNIX) || defined(VMS)
+/*
+ * Return TRUE if we are certain the user owns the file "fname".
+ * Used for ".vimrc" and ".exrc".
+ * Use both stat() and lstat() for extra security.
+ */
+    static int
+file_owned(fname)
+    char	*fname;
+{
+    struct stat s;
+# ifdef UNIX
+    uid_t	uid = getuid();
+# else	 /* VMS */
+    uid_t	uid = ((getgid() << 16) | getuid());
+# endif
+
+    return !(mch_stat(fname, &s) != 0 || s.st_uid != uid
+# ifdef HAVE_LSTAT
+	    || mch_lstat(fname, &s) != 0 || s.st_uid != uid
+# endif
+	    );
+}
+#endif
 
 #if defined(GUI_DIALOG) || defined(CON_DIALOG)
 static void check_swap_exists_action __ARGS((void));
@@ -1024,23 +1052,10 @@ main
 	if (p_exrc)
 	{
 #if defined(UNIX) || defined(VMS)
-	    {
-		struct stat s;
-
-		/* if ".vimrc" file is not owned by user, set 'secure' mode */
-
-		if (mch_stat(VIMRC_FILE, &s) || s.st_uid !=
-# ifdef UNIX
-				getuid()
-# else	 /* VMS */
-				((getgid() << 16) | getuid())
-# endif
-		    )
-		    secure = p_secure;
-	    }
-#else
-	    secure = p_secure;
+	    /* if ".vimrc" file is not owned by user, set 'secure' mode */
+	    if (!file_owned(VIMRC_FILE))
 #endif
+		secure = p_secure;
 
 	    i = FAIL;
 	    if (fullpathcmp((char_u *)USR_VIMRC_FILE,
@@ -1063,16 +1078,8 @@ main
 	    if (i == FAIL)
 	    {
 #if defined(UNIX) || defined(VMS)
-		struct stat s;
-
 		/* if ".exrc" is not owned by user set 'secure' mode */
-		if (mch_stat(EXRC_FILE, &s) || s.st_uid !=
-# ifdef UNIX
-				getuid()
-# else	 /* VMS */
-				((getgid() << 16) | getuid())
-# endif
-		    )
+		if (!file_owned(EXRC_FILE))
 		    secure = p_secure;
 		else
 		    secure = 0;

@@ -601,16 +601,16 @@ gui_x11_key_hit_cb(w, dud, event, dum)
     if (len == 1 && (ev_press->state & Mod1Mask)
 			&& !(key_sym == XK_BackSpace || key_sym == XK_Delete))
     {
-#ifdef USE_GUI_MOTIF
+#if defined(USE_GUI_MOTIF) && defined(WANT_MENU)
 	/* Ignore ALT keys when they are used for the menu only */
 	if (gui.menu_is_active
 		&& (p_wak[0] == 'y'
 		    || (p_wak[0] == 'm' && gui_is_menu_shortcut(string[0]))))
 	{
-#ifdef USE_XIM
+# ifdef USE_XIM
 	    if (string_alloced)
 		XtFree((char *)string);
-#endif
+# endif
 	    return;
 	}
 #endif
@@ -731,7 +731,7 @@ gui_x11_key_hit_cb(w, dud, event, dum)
     {
 	/* Turn CSI into K_CSI. */
 	string[1] = KS_EXTRA;
-	string[2] = KE_CSI;
+	string[2] = (int)KE_CSI;
 	len = 3;
     }
 

@@ -1,7 +1,7 @@
 " An example for a vimrc file.
 "
 " Maintainer:	Bram Moolenaar <Bram@vim.org>
-" Last change:	2000 Mar 29
+" Last change:	2000 Oct 14
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -65,13 +65,14 @@ if has("autocmd")
 
   " Enable editing of gzipped files
   " set binary mode before reading the file
+  " use "gzip -d", gunzip isn't always available
   autocmd BufReadPre,FileReadPre	*.gz,*.bz2 set bin
-  autocmd BufReadPost,FileReadPost	*.gz call GZIP_read("gunzip")
-  autocmd BufReadPost,FileReadPost	*.bz2 call GZIP_read("bunzip2")
+  autocmd BufReadPost,FileReadPost	*.gz call GZIP_read("gzip -d")
+  autocmd BufReadPost,FileReadPost	*.bz2 call GZIP_read("bzip2 -d")
   autocmd BufWritePost,FileWritePost	*.gz call GZIP_write("gzip")
   autocmd BufWritePost,FileWritePost	*.bz2 call GZIP_write("bzip2")
-  autocmd FileAppendPre			*.gz call GZIP_appre("gunzip")
-  autocmd FileAppendPre			*.bz2 call GZIP_appre("bunzip2")
+  autocmd FileAppendPre			*.gz call GZIP_appre("gzip -d")
+  autocmd FileAppendPre			*.bz2 call GZIP_appre("bzip2 -d")
   autocmd FileAppendPost		*.gz call GZIP_write("gzip")
   autocmd FileAppendPost		*.bz2 call GZIP_write("bzip2")
 
@@ -86,8 +87,8 @@ if has("autocmd")
     let tmpe = tmp . "." . expand("<afile>:e")
     " write the just read lines to a temp file "'[,']w tmp.gz"
     execute "'[,']w " . tmpe
-    " uncompress the temp file "!gunzip tmp.gz"
-    execute "!" . a:cmd . " " . tmpe
+    " uncompress the temp file: call system("gzip -d tmp.gz")
+    call system(a:cmd . " " . tmpe)
     " delete the compressed lines
     '[,']d
     " read in the uncompressed lines "'[-1r tmp"
@@ -109,13 +110,13 @@ if has("autocmd")
   " After writing compressed file: Compress written file with "cmd"
   fun! GZIP_write(cmd)
     if rename(expand("<afile>"), expand("<afile>:r")) == 0
-      execute "!" . a:cmd . " <afile>:r"
+      call system(a:cmd . " " . expand("<afile>:r"))
     endif
   endfun
 
   " Before appending to compressed file: Uncompress file with "cmd"
   fun! GZIP_appre(cmd)
-    execute "!" . a:cmd . " <afile>"
+    call system(a:cmd . " " . expand("<afile>"))
     call rename(expand("<afile>:r"), expand("<afile>"))
   endfun
 

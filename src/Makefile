@@ -117,7 +117,7 @@
 #		make installhelplinks	only installs the Vim manpage links
 #		make installmacros	only installs the Vim macros
 #		make installtutor	only installs the Vim tutor
-#		make installtools	only installs the tools ctags and xxd
+#		make installtools	only installs the Vim tools and xxd
 #
 # 6. Use Vim until a new version comes out.
 #
@@ -175,9 +175,9 @@
 #FreeBSD 2.1.6	      gcc-2.6.3      +X11 -GUI Athena	5.0c	 Bram Moolenaar
 #FreeBSD 2.2.5	      gcc-2.7.2.1    X11R6 Moo-Tiff	5.4d	 Bram Moolenaar
 #FreeBSD 2.2.5	      gcc-2.7.2.1    +X11 -GUI Athena	5.4d	 Bram Moolenaar
-#FreeBSD 3.3	      gcc-2.7.2.1    +X11 GTK 1.2.5	5.7	 Bram Moolenaar
-#FreeBSD 3.3	      gcc-2.7.2.1    +X11 Athena	5.7	 Bram Moolenaar
-#FreeBSD 3.3	      gcc-2.7.2.1    +X11 Lesstif0.89.4 5.7	 Bram Moolenaar
+#FreeBSD 4.2	      gcc-2.7.2.1    +X11 GTK 1.2.8	5.8	 Bram Moolenaar
+#FreeBSD 4.2	      gcc-2.7.2.1    +X11 Athena	5.8	 Bram Moolenaar
+#FreeBSD 4.2	      gcc-2.7.2.1    +X11 Lesstif0.89.4 5.8	 Bram Moolenaar
 #Linux 2.0	      gcc-2.7.2      Infomagic Motif	4.3  (3) Ronald Rietman
 #Linux 2.0.31	      gcc	     +X11 +GUI Athena	5.0w (U) Darren Hiebert
 #Linux 2.0.33	      gcc-2.7.2.1    X11R6, Lesstif	5.0s	 Tony Nugent
@@ -717,7 +717,7 @@ RGVIEWNAME	= r$(GVIEWNAME)
 RGVIEWTARGET	= $(RGVIEWNAME)$(SUFFIX)
 
 ### Names of the tools that are also made
-TOOLS = ctags/ctags$(SUFFIX) xxd/xxd$(SUFFIX)
+TOOLS = xxd/xxd$(SUFFIX)
 
 ### Installation directories.  The defaults come from configure.
 #
@@ -751,7 +751,7 @@ MANSUBDIR = $(MANDIR)/man1
 ### Location of Vim files (should not need to be changed, and some things
 ### might not work when they are changed!)
 VIMDIR = /vim
-VIMRTDIR = /vim57
+VIMRTDIR = /vim58
 HELPSUBDIR = /doc
 SYNSUBDIR = /syntax
 MACROSUBDIR = /macros
@@ -994,7 +994,7 @@ BEOSGUI_MAN_TARGETS = $(MANSUBDIR)/$(GVIMNAME).1 \
 			$(MANSUBDIR)/$(RGVIEWNAME).1
 BEOSGUI_TESTTARGET = gui
 
-# GUI files used for making ctags
+# GUI files used for making the tags file
 ALL_GUI_INCL = gui.h gui_at_sb.h gui_gtk_f.h
 ALL_GUI_SRC  = gui.c gui_gtk.c gui_gtk_f.c gui_motif.c gui_athena.c gui_gtk_x11.c gui_x11.c gui_at_sb.c gui_at_fs.c pty.c
 ALL_GUI_PRO  = gui.pro gui_gtk.pro gui_motif.pro gui_athena.pro gui_gtk_x11.pro gui_x11.pro gui_w32.pro gui_amiga.pro
@@ -1011,10 +1011,10 @@ VIMVERSION = `eval "basename \`cd ../; pwd\`"`
 CPP_DEPEND = $(CC) -M$(CPP_MM) $(DEPEND_CFLAGS)
 
 # flags for cproto
-#     __inline and __attribute__ are not recognized by cproto
+#     __inline, __attribute__ and __extension__ are not recognized by cproto
 #     maybe the "/usr/bin/cc -E" has to be adjusted for some systems
 
-NO_ATTR = -D__inline= -D"__attribute__\\(x\\)="
+NO_ATTR = -D__inline= -D"__attribute__\\(x\\)=" -D__extension__=
 
 # This is for cproto 3.5 patchlevel 3:
 # PROTO_FLAGS = -f4 -m__ARGS -d -E"$(CPP)" $(NO_ATTR)
@@ -1255,19 +1255,6 @@ $(VIMTARGET): config.mk $(OBJ) version.c version.h
 		$(OBJ) version.o $(ALL_LIBS)" MAKE="$(MAKE)" \
 		sh $(srcdir)/link.sh
 
-CTAGSFILES =	ctags/entry.c ctags/main.c ctags/parse.c ctags/sort.c \
-		ctags/get.c ctags/options.c ctags/read.c ctags/strstr.c \
-		ctags/config.h ctags/ctags.h
-
-ctags/ctags$(SUFFIX): ctags/Makefile $(CTAGSFILES)
-	cd ctags; CC="$(CC)" CPPFLAGS="$(CPPFLAGS)" CFLAGS="$(CFLAGS)" \
-		$(MAKE) -f Makefile SUFFIX="$(SUFFIX)"
-
-ctags/Makefile ctags/config.h: ctags/Makefile.in
-	cd ctags; SUFFIX="$(SUFFIX)" CC="$(CC)" CPPFLAGS="$(CPPFLAGS)" \
-		CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-		./configure --mandir="$(MANDIR)" --exec_prefix="$(exec_prefix)"
-
 xxd/xxd$(SUFFIX): xxd/xxd.c
 	cd xxd; CC="$(CC)" CPPFLAGS="$(CPPFLAGS)" CFLAGS="$(CFLAGS)" \
 		$(MAKE) -f Makefile.unix
@@ -1427,12 +1414,9 @@ installtutor: $(TUTORSOURCE) $(VIMLOC) $(VIMRTLOC) $(TUTORSUBLOC)
 	-$(INSTALL_DATA) $(TUTORSOURCE)/* $(TUTORSUBLOC)
 	chmod $(HELPMOD) $(TUTORSUBLOC)/*
 
-# install helper programs ctags and xxd
+# install the runtime tools and xxd
 installtools: $(TOOLS) $(exec_prefix) $(BINDIR) $(MANSUBDIR) \
 		$(TOOLSSOURCE) $(VIMLOC) $(VIMRTLOC) $(TOOLSSUBLOC)
-	cd ctags; mandir="$(MANDIR)" \
-		exec_prefix="$(exec_prefix)" bindir="$(BINDIR)" \
-		$(MAKE) -e -f Makefile	SUFFIX="$(SUFFIX)" install
 	if test -f $(BINDIR)/xxd$(SUFFIX); then \
 	  mv -f $(BINDIR)/xxd$(SUFFIX) $(BINDIR)/xxd.rm; \
 	  rm -f $(BINDIR)/xxd.rm; \
@@ -1454,7 +1438,7 @@ $(HELPSOURCE)/vim.1 $(MACROSOURCE) $(TOOLSSOURCE):
 
 $(exec_prefix) $(BINDIR) $(MANSUBDIR) $(VIMLOC) $(VIMRTLOC) $(HELPSUBLOC) \
 		$(SYNSUBLOC) $(MACROSUBLOC) $(TOOLSSUBLOC) $(TUTORSUBLOC):
-	-$(SHELL) ctags/mkinstalldirs $@
+	-$(SHELL) mkinstalldirs $@
 	-chmod $(DIRMOD) $@
 
 # create links from various names to vim.  This is only done when the links
@@ -1517,7 +1501,6 @@ uninstall: uninstall_runtime
 	-rm -f $(BINDIR)/$(VIMTARGET)
 	-rm -f $(MANSUBDIR)/$(VIMNAME).1 $(MANSUBDIR)/$(VIMNAME)tutor.1
 	-rm -f $(BINDIR)/vimtutor
-	-rm -f $(BINDIR)/ctags$(SUFFIX) $(MANSUBDIR)/ctags.1
 	-rm -f $(BINDIR)/xxd$(SUFFIX) $(MANSUBDIR)/xxd.1
 	-rm -f $(BINDIR)/$(EXTARGET) $(BINDIR)/$(VIEWTARGET)
 	-rm -f $(BINDIR)/$(GVIMTARGET) $(BINDIR)/$(GVIEWTARGET)
@@ -1545,21 +1528,13 @@ clean celan: testclean
 	-rm -f *.o core $(VIMTARGET).core $(VIMTARGET) xxd/*.o
 	-rm -f $(TOOLS) osdef.h pathdef.c if_perl.c
 	-rm -f conftest* *~ link.sed
-	if test -f ctags/Makefile; then \
-		cd ctags; $(MAKE) -f Makefile SUFFIX="$(SUFFIX)" clean; \
-	fi
 
 shadow:	runtime pixmaps
 	mkdir shadow
-	cd shadow; ln -s ../*.[ch] ../*.in ../*.sh ../*.xs ../*.xbm ../toolcheck ../proto ../configure ../vimtutor .
+	cd shadow; ln -s ../*.[ch] ../*.in ../*.sh ../*.xs ../*.xbm ../toolcheck ../proto ../configure ../vimtutor ../mkinstalldirs .
 	cd shadow; rm -f osdef.h config.h pathdef.c link.sed
 	cp Makefile shadow
 	echo "the first targets to make vim are: scratch config myself" > shadow/config.mk
-	mkdir shadow/ctags
-	cd shadow/ctags; ln -s ../../ctags/*.[ch1] \
-				../../ctags/*.in \
-				../../ctags/mkinstalldirs \
-				../../ctags/configure .
 	mkdir shadow/xxd
 	cd shadow/xxd; ln -s ../../xxd/*.[ch] ../../xxd/Make* .
 	mkdir shadow/testdir
@@ -1576,12 +1551,15 @@ runtime:
 pixmaps:
 	-ln -s ../pixmaps .
 
+# Update the menu.vim file with the latest Syntax menu.
+# This is only needed when runtime/makemenu.vim was changed.
+# Does not work with "--enable-min-features".
+menu: ./vim ../runtime/makemenu.vim
+	./vim -u ../runtime/makemenu.vim
+
 # Start configure from scratch
 scrub scratch:
 	-rm -f config.status config.cache config.h config.log
-	-if test -f ctags/Makefile; then \
-		cd ctags; $(MAKE) -f Makefile SUFFIX="$(SUFFIX)" distclean; \
-	fi
 
 distclean: clean scratch
 	echo "the first targets to make vim are: scratch config myself" > config.mk

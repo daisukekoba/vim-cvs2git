@@ -99,11 +99,13 @@ if test "$enable_perlinterp" = "yes"; then
       if test "X$perlcppflags" != "X"; then
 	PERL_CFLAGS="$perlcppflags"
       fi
-      perllibs=`cd $srcdir;$vi_cv_path_perl -MExtUtils::Embed \
-	      -e 'ldopts' | sed '/Warning/d' | sed '/Note (probably harmless)/d'`
+      dnl Remove "-lc", it breaks on FreeBSD when using "-pthread".
+      perllibs=`cd $srcdir; $vi_cv_path_perl -MExtUtils::Embed -e 'ldopts' | \
+		sed -e '/Warning/d' -e '/Note (probably harmless)/d' \
+			-e 's/-bE:perl.exp//' -e 's/-lc //'`
+      AC_SUBST(perllibs)
       dnl Don't add perl lib to $LIBS: if it's not in LD_LIBRARY_PATH
       dnl a test in configure may fail because of that.
-      AC_SUBST(perllibs)
       perlldflags=`cd $srcdir;$vi_cv_path_perl -MExtUtils::Embed \
 	      -e 'ccdlflags'`
       if test "X$perlldflags" != "X"; then
@@ -229,6 +231,25 @@ eof
 	fi
 	PYTHON_GETPATH_CFLAGS="-DPYTHONPATH='\"${vi_cv_path_pythonpath}\"' -DPREFIX='\"${vi_cv_path_python_pfx}\"' -DEXEC_PREFIX='\"${vi_cv_path_python_epfx}\"'"
 
+	dnl On FreeBSD "-pthread" is required to use threads.
+	dnl _THREAD_SAFE must be used for compiling then.
+	dnl The "-pthread" is added to $LIBS, so that the following check for
+	dnl sigaltstack() will look in libc_r (it's there in libc!).
+	AC_MSG_CHECKING([if -pthread should be used])
+	if test "`(uname) 2>/dev/null`" = FreeBSD; then
+	  cflags_save=$CFLAGS
+	  libs_save=$LIBS
+	  CFLAGS="$CFLAGS -D_THREAD_SAFE"
+	  LIBS="$LIBS -pthread"
+	  AC_TRY_LINK(,[ ],
+	     AC_MSG_RESULT(yes); PYTHON_CFLAGS="$PYTHON_CFLAGS -D_THREAD_SAFE",
+	     AC_MSG_RESULT(no); LIBS=$libs_save
+	     )
+	  CFLAGS=$cflags_save
+	else
+	  AC_MSG_RESULT(no)
+	fi
+
 	AC_DEFINE(HAVE_PYTHON)
 
       fi
@@ -252,17 +273,23 @@ AC_MSG_RESULT($enable_tclinterp)
 
 if test "$enable_tclinterp" = "yes"; then
 
-	dnl on FreeBSD tclsh is a silly script. tclsh8.0 is what we need.
+	dnl on FreeBSD tclsh is a silly script. look for tclsh8.0 or tclsh8.2
 	AC_MSG_CHECKING(--with-tclsh argument)
 	AC_ARG_WITH(tclsh, [  --with-tclsh=PATH       which tclsh to use (default: tclsh8.0)],
-		tclsh_name="$withval",
-        	tclsh_name="tclsh8.0")
-	AC_MSG_RESULT($tclsh_name)
+		tclsh_name="$withval"; AC_MSG_RESULT($tclsh_name),
+        	tclsh_name="tclsh8.0"; AC_MSG_RESULT(no))
 	AC_PATH_PROG(vi_cv_path_tcl, $tclsh_name)
 	AC_SUBST(vi_cv_path_tcl)
 
+	dnl when no specific version specified, also try 8.2
+	if test "X$vi_cv_path_tcl" = "X" -a $tclsh_name = "tclsh8.0"; then
+	  tclsh_name="tclsh8.2"
+	  AC_PATH_PROG(vi_cv_path_tcl, $tclsh_name)
+	fi
+	dnl still didn't find it, try without version number
 	if test "X$vi_cv_path_tcl" = "X"; then
-	  AC_PATH_PROG(vi_cv_path_tcl, tclsh)
+	  tclsh_name="tclsh"
+	  AC_PATH_PROG(vi_cv_path_tcl, $tclsh_name)
 	fi
 	if test "X$vi_cv_path_tcl" != "X"; then
 		AC_MSG_CHECKING(Tcl version)

@@ -203,11 +203,11 @@ gui_mac_get_menu_item_index (pMenu, pElderMenu)
 	/* pMenu is the one we inquiries */
 	/* pElderMenu the menu where we start looking for */
 
-	short   itemIndex = -1;
-	short	index;
+	MenuItemIndex   itemIndex = 0; /* MenuItemIndex is Uint16 */
+	MenuItemIndex	index;
 	VimMenu *pChildren = pElderMenu->children;;
 
-	while ((pElderMenu != NULL) && (itemIndex == -1))
+	while ((pElderMenu != NULL) && (itemIndex == 0))
 	{
 		pChildren = pElderMenu->children;
 
@@ -291,39 +291,39 @@ gui_mac_update(event)
 	WindowPtr	whichWindow;
 	GrafPtr		savePort;
 	RgnHandle	updateRgn;
-	Rect		*updateRect;
+	Rect		updateRect;
 	Rect		rc;
 	Rect		growRect;
 	RgnHandle	saveRgn;
 
 	GetPort (&savePort);
 	whichWindow = (WindowPtr) event->message;
-	SetPort (whichWindow);
+	SetPortWindowPort (whichWindow);
 	  BeginUpdate (whichWindow);
 		updateRgn = whichWindow->visRgn;
 		HLock ((Handle) updateRgn);
-		  updateRect = &(*updateRgn)->rgnBBox;
-		  gui_redraw(updateRect->left, updateRect->top,
-					  updateRect->right - updateRect->left,
-					  updateRect->bottom   - updateRect->top);
+ 		  updateRect = *(&(*updateRgn)->rgnBBox);
+		  gui_redraw(updateRect.left, updateRect.top,
+					  updateRect.right - updateRect.left,
+					  updateRect.bottom   - updateRect.top);
 		  /* Clear the border areas if needed */
 		  gui_mch_set_bg_color(gui.back_pixel);
-		  if (updateRect->left < FILL_X(0))
+		  if (updateRect.left < FILL_X(0))
 		  {
 			SetRect (&rc, 0, 0, FILL_X(0), FILL_Y(Rows));
 			EraseRect (&rc);
 		  }
-		  if (updateRect->top < FILL_Y(0))
+		  if (updateRect.top < FILL_Y(0))
 		  {
 			SetRect (&rc, 0, 0, FILL_X(Columns), FILL_Y(0));
 			EraseRect (&rc);
 		  }
-		  if (updateRect->right > FILL_X(Columns))
+		  if (updateRect.right > FILL_X(Columns))
 		  {
 			SetRect (&rc, FILL_X(Columns), 0, FILL_X(Columns)+gui.border_offset, FILL_Y(Rows));
 			EraseRect (&rc);
 		  }
-		  if (updateRect->bottom > FILL_Y(Rows))
+		  if (updateRect.bottom > FILL_Y(Rows))
 		  {
 			SetRect (&rc, 0, FILL_Y(Rows), FILL_X(Columns)+gui.border_offset, FILL_Y(Rows)+gui.border_offset);
 			EraseRect (&rc);
@@ -406,7 +406,7 @@ gui_mac_handle_menu(menuChoice)
 	if (menu == 256)  /* TODO: use constant or gui.xyz */
 	{
 		if (item == 1)
-			SysBeep(1); /* TODO: Popup dialog or do :intro */
+			gui_mch_beep(); /* TODO: Popup dialog or do :intro */
 		else
 		{
 			appleMenu = GetMenuHandle (menu);
@@ -451,8 +451,6 @@ gui_mac_scroll_action (ControlHandle theControl, short partCode)
 	long		value;
 	int			page;
 	int			dragging = FALSE;
-    WIN		*wp;
-    int		sb_num;
 
 	sb = gui_find_scrollbar((long) GetControlReference (theControl));
 
@@ -501,6 +499,9 @@ gui_mac_scroll_action (ControlHandle theControl, short partCode)
 
 /*  if (sb_info->wp != NULL)
     {
+		WIN		*wp;
+		int		sb_num;
+
 		sb_num = 0;
 		for (wp = firstwin; wp != sb->wp && wp != NULL; wp = wp->w_next)
 		sb_num++;
@@ -535,8 +536,11 @@ gui_mch_prepare(argc, argv)
     char_u temp[256];
     FSSpec applDir;
 #endif
+#ifdef USE_CTRLCLICKMENU
 	long	gestalt_rc;
+#endif
 
+#if ! TARGET_API_MAC_CARBON
 	MaxApplZone();
 	InitGraf(&qd.thePort);
 	InitFonts();
@@ -544,6 +548,7 @@ gui_mch_prepare(argc, argv)
 	InitMenus();
 	TEInit();
 	InitDialogs(nil);
+#endif
 	InitCursor();
 
 #ifdef USE_AEVENT
@@ -582,7 +587,7 @@ gui_mch_prepare(argc, argv)
 	gui.VimWindow = NewCWindow(nil, &windRect, "\pgVim on Macintosh", true, documentProc,
 						(WindowPtr) -1, false, 0);
 
-	SetPort(gui.VimWindow);
+	SetPortWindowPort(gui.VimWindow);
 
 	gui.char_width = 7;
 	gui.char_height = 11;
@@ -592,8 +597,8 @@ gui_mch_prepare(argc, argv)
 	gui.rev_video = FALSE;
 	gui.in_focus = TRUE; /* For the moment -> syn. of front application */
 
-	gScrollAction = NewControlActionProc (gui_mac_scroll_action);
-    gScrollDrag   = NewControlActionProc (gui_mac_drag_thumb);
+	gScrollAction = NewControlActionUPP (gui_mac_scroll_action);
+    gScrollDrag   = NewControlActionUPP (gui_mac_drag_thumb);
 
 	pomme = NewMenu (256, "\p\024"); /* 0x14= = Apple Menu */
 	InsertMenu (pomme, 0);
@@ -608,7 +613,7 @@ gui_mch_prepare(argc, argv)
 	(void) HMGetHelpMenuHandle(&gui.MacOSHelpMenu);	/* Getting a handle to the Help menu */
 
 	if (gui.MacOSHelpMenu != nil)
-		gui.MacOSHelpItems = CountMItems (gui.MacOSHelpMenu);
+		gui.MacOSHelpItems = CountMenuItems (gui.MacOSHelpMenu);
 	else
 		gui.MacOSHelpItems = 0;
 #endif
@@ -637,9 +642,6 @@ gui_mch_prepare(argc, argv)
 	int
 gui_mch_init()
 {
-	GuiColor tmp_pixel;
-
-
     /* Display any pending error messages */
     mch_display_error();
 
@@ -1104,7 +1106,6 @@ gui_mch_get_color(name)
 			int	    len;
 			int	    pos;
 			char    *color;
-			int		dummy;
 
 			fgets(line, LINE_LEN, fd);
 			len = strlen(line);
@@ -1224,7 +1225,7 @@ gui_mch_haskey(name)
 	void
 gui_mch_beep()
 {
-	SysBeep (1);
+	SysBeep (1); /* Should this be 0? */
 }
 
 	void
@@ -1432,7 +1433,6 @@ gui_mac_doMouseDown (theEvent)
 	Rect			movingLimits;
 	short			thePortion;
 	ControlHandle	theControl;
-	long			menu;
 
 	Rect			sizeRect;
 	long			newSize;
@@ -1569,8 +1569,6 @@ gui_mac_handle_event (event)
 	Boolean		a_bool;
 	int_u		vimModifier;
 	OSErr		error;
-
-	char		touche;
 
 #ifdef USE_CTRLCLICKMENU
 	/*
@@ -1745,14 +1743,10 @@ WaitNextEventWrp (EventMask eventMask, EventRecord *theEvent, UInt32 sleep, RgnH
 gui_mch_wait_for_chars(wtime)
 	int		wtime;
 {
-	RgnHandle	watchingRgn;
-
 	EventMask	mask  = (everyEvent);
 	EventRecord event;
 	long		entryTick;
 	long		currentTick;
-
-	short		oldDragRectEnbl;
 
 	entryTick = TickCount();
 
@@ -2010,13 +2004,8 @@ clip_mch_own_selection()
 clip_mch_set_selection()
 {
 	Handle textOfClip;
-	long	scrapOffset;
 	long	scrapSize;
 	int		type;
-	char   *searchCR;
-	char   *tempclip;
-
-	long_u	cch;
 	char_u *str = NULL;
 
 	if (!clipboard.owned)
@@ -2253,7 +2242,6 @@ gui_mch_destroy_menu(menu)
 	VimMenu	*menu;
 {
 	short   index = gui_mac_get_menu_item_index (menu, root_menu);
-	VimMenu *brother;
 /*
 	index = menu->index;
 */
@@ -2261,6 +2249,8 @@ gui_mch_destroy_menu(menu)
 	{
 		/* Scroll all index number */
 /*
+		VimMenu *brother;
+
 		for (brother = menu->next; brother != NULL; brother = brother->next, index++)
 			brother->index = index;
 */
@@ -2340,16 +2330,16 @@ gui_mch_menu_hidden(menu, hidden)
 	if (hidden)
 	{
 		if (menu->children)
-			DisableItem(menu->submenu_handle, menu->index);
+			DisableMenuItem(menu->submenu_handle, menu->index);
 		if (menu->menu_handle)
-			DisableItem(menu->menu_handle, menu->index);
+			DisableMenuItem(menu->menu_handle, menu->index);
 	}
 	else
 	{
 		if (menu->children)
-			EnableItem(menu->submenu_handle, index);
+			EnableMenuItem(menu->submenu_handle, index);
 		if (menu->menu_handle)
-			EnableItem(menu->menu_handle, index);
+			EnableMenuItem(menu->menu_handle, index);
 	}
 }
 
@@ -2649,7 +2639,6 @@ gui_mch_dialog(
 	short		button;
 	short		itemType;
 	short		useIcon;
-	short       appendWhere;
 
 	theDialog = GetNewDialog (129, nil, (WindowRef) -1);
     /*	SetTitle (title); */
@@ -2714,7 +2703,7 @@ gui_mch_dialog(
 	SetDialogCancelItem (theDialog, 0);
 
 	GetPort (&oldPort);
-	SetPort (theDialog);
+	SetPortDialogPort (theDialog);
 
 	ModalDialog (nil, &itemHit);
 	SetPort (oldPort);
@@ -3034,7 +3023,6 @@ pascal OSErr Handle_KAHL_SRCH_AE (AppleEvent *theAEvent, AppleEvent *theReply, l
 	OSErr	error = noErr;
 	BUF		*buf;
 	int		foundFile = false;
-	FSSpec	find_FSSpec;
 	DescType	typeCode;
 	WindowSearch SearchData;
 	Size			actualSize;
@@ -3432,6 +3420,7 @@ OSErr   InstallAEHandlers (void)
 	error = AEInstallEventHandler(kAECoreSuite, kAESetData,
 					NewAEEventHandlerProc(Handle_unknown_AE), nil, false);
 
+	*/
 	/*
 	 * Bind codewarrior support handlers
 	 */

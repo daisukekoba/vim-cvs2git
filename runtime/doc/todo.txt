@@ -1,4 +1,4 @@
-*todo.txt*      For Vim version 5.7.  Last change: 2000 Jun 24
+*todo.txt*      For Vim version 5.8.  Last change: 2001 May 31
 
 
 				  VIM REFERENCE MANUAL	  by Bram Moolenaar
@@ -23,16 +23,18 @@ Priority classification:
 1	probably not
 -	unclassified
 
-Plan:
-1.	Following 5.x releases will be the "stable" branch.  Bug fixes only.
-2.	Start work on version 6.0, the "unstable" branch.  Many new features to be
-	included.  First of all: Folding.
+Vim 5.8 is in the stable branch.  No new features are added, only serious
+problems will be fixed.
+Vim 6.0 is the unstable branch.  Many new features which need to be tested.
 
 See |votes-for-changes| for a list of votes on desired changes in Vim.
 See |develop.txt| for development plans.
 
 														*known-bugs*
 -------------------- Known bugs and current work -----------------------
+
+The DOS runtime archive doesn't fit on a floppy.
+
 
 Vi incompatibility:
 8	With undo/redo only marks in the changed lines should be changed.  Other
@@ -187,13 +189,11 @@ Win32 GUI known bugs:
 7	File/Print uses notepad, which puts the name of the temp file on top of
 	each page.  How do we get the actual file name there?
 	Alternative: use prfile32 (Aaron)
-8	install.exe, vimrun.exe and ctags are not build from Gvim_vc.mak.  When
+8	install.exe and vimrun.exe are not build from Gvim_vc.mak.  When
 	added, check that this works from the command line and from the IDE.
 8	":r !mycommand" doesn't pass the environment to the external command.
 8	When dropping a shortcut on gvim (.lnk file) should edit the target, not
 	the shortcut itself.
-9	OleVim doesn't send <C-\><C-N>, which causes trouble if Vim is in Insert
-	mode. (Thakkar)
 8	Tear-off menu causes a crash when it contains many items (>100).
 	(Pedro Gomes)  Probably because DLG_ALLOC_SIZE is a fixed number.
 
@@ -322,8 +322,8 @@ MSDOS/DJGPP:
 7	MSDOS 16 bit version can't work with COMSPEC that has an argument, e.g.:
 	COMSPEC=C:\WINDOWS\COMMAND.COM /E:4096	  (Bradley)
 	Caused by BCC system() function (Borland "make" has the same problem).
-8	Makefile.bor can't compile xxd and ctags without editing the makefiles.
-	Create a Makefile.bor for xxd and ctags.
+8	Makefile.bor can't compile xxd without editing the makefiles.
+	Create a Makefile.bor for xxd.
 8	Check if with DJGPP 2.01 the problem of a path starting with a backslash is
 	still present.
 8	Mouse: handle left&right button pressed as middle button pressed.  Add
@@ -725,6 +725,8 @@ Considered for release 6.0:
 
 
 Documentation:
+9	Errors in doc to HTML conversion:
+	autocmd.txt "like \| in a |pattern|"
 9	Change examples in docs: Instead of a ">" in front of every line, use " >"
 	once at end of line before the example and "<" after the last line (or a
 	not-indented line).  Use the syntax cmd:

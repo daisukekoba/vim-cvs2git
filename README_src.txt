@@ -1,4 +1,4 @@
-README_src.txt for version 5.7 of Vim: Vi IMproved.
+README_src.txt for version 5.8 of Vim: Vi IMproved.
 
 The source archive contains the files needed to compile Vim on Unix systems.
 It is packed for Unix systems (NL line separator).  It is also used for other

@@ -1,4 +1,4 @@
-*autocmd.txt*   For Vim version 5.7.  Last change: 2000 Jun 22
+*autocmd.txt*   For Vim version 5.8.  Last change: 2001 Feb 01
 
 
 		  VIM REFERENCE MANUAL    by Bram Moolenaar
@@ -420,6 +420,7 @@ The pattern is interpreted like mostly used in file names:
 	{ }	like \( \) in a |pattern|
 	,	inside { }: like \| in a |pattern|
 	\	special meaning like in a |pattern|
+	[ch]	matches 'c' or 'h'
 
 Note that for all systems the '/' character is used for path separator (even
 MS-DOS and OS/2).  This was done because the backslash is difficult to use

@@ -1,8 +1,8 @@
 " Vim syntax file
-" Language:	Vim 5.6 script
+" Language:	Vim 5.7 script
 " Maintainer:	Dr. Charles E. Campbell, Jr. <Charles.E.Campbell.1@gsfc.nasa.gov>
-" Last Change:	June 8, 2000
-" Version:	5.6-10
+" Last Change:	June 27, 2000
+" Version:	5.7-01
 
 " Remove old syntax
 syn clear
@@ -231,15 +231,15 @@ syn keyword vimErrSetting contained	ht	w300
 
 " AutoBuf Events
 syn case ignore
-syn keyword vimAutoEvent contained	BufCreate	BufReadPost	FileAppendPre	FilterReadPre	Syntax
-syn keyword vimAutoEvent contained	BufDelete	BufReadPre	FileChangedShell	FilterWritePost	TermChanged
+syn keyword vimAutoEvent contained	BufCreate	BufReadPost	FileChangedShell	FilterReadPre	Syntax
+syn keyword vimAutoEvent contained	BufDelete	BufReadPre	FileEncoding	FilterWritePost	TermChanged
 syn keyword vimAutoEvent contained	BufEnter	BufUnload	FileReadPost	FilterWritePre	User
 syn keyword vimAutoEvent contained	BufFilePost	BufWrite	FileReadPre	FocusGained	VimEnter
 syn keyword vimAutoEvent contained	BufFilePre	BufWritePost	FileType	FocusLost	VimLeave
 syn keyword vimAutoEvent contained	BufHidden	BufWritePre	FileWritePost	GUIEnter	VimLeavePre
 syn keyword vimAutoEvent contained	BufLeave	CursorHold	FileWritePre	StdinReadPost	WinEnter
 syn keyword vimAutoEvent contained	BufNewFile	FileAppendPost	FilterReadPost	StdinReadPre	WinLeave
-syn keyword vimAutoEvent contained	BufRead
+syn keyword vimAutoEvent contained	BufRead	FileAppendPre
 
 " Highlight commonly used Groupnames
 syn keyword vimGroup contained	Comment	Identifier	Keyword	Type	Delimiter
@@ -317,9 +317,9 @@ syn match vimOper	"||\|&&\|!=\|>=\|<=\|=\~\|!\~\|>\|<\|+\|-\|=\|\." skipwhite ne
 " User-Specified Commands
 syn cluster vimUserCmdList	contains=vimAddress,vimSyntax,vimHighlight,vimAutoCmd,vimCmplxRepeat,vimComment,vimCtrlChar,vimEscapeBrace,vimFilter,vimFunc,vimFunction,vimIsCommand,vimMark,vimNotation,vimNumber,vimOper,vimRegion,vimRegister,vimLet,vimSet,vimSetEqual,vimSetString,vimSpecFile,vimString,vimSubst,vimSubstEnd,vimSubstRange,vimSynLine
 syn match   vimUserCmd	"\<com\(m\(a\(nd\=\)\=\)\=\)\=!\=\>.*$"		contains=vimUserAttrb,@vimUserCmdList
-syn match   vimUserAttrb 	contained	"-n\(a\(r\(gs\=\)\=\)\=\)\==[01*?+]"	contains=vimUserAttrbKey,vimOper
-syn match   vimUserAttrb 	contained	"-com\(p\(l\(e\(te\=\)\=\)\=\)\=\)\==\(augroup\|buffer\|command\|dir\|event\|file\|help\|highlight\|menu\|option\|tag\|var\)"	contains=vimUserAttrbKey,vimUserAttrbCmplt,vimOper
-syn match   vimUserAttrb 	contained	"-ra\(n\(ge\=\)\=\)\=\(=%\|=\d\+\)\="	contains=vimNumber,vimOper,vimUserAttrbKey
+syn match   vimUserAttrb	contained	"-n\(a\(r\(gs\=\)\=\)\=\)\==[01*?+]"	contains=vimUserAttrbKey,vimOper
+syn match   vimUserAttrb	contained	"-com\(p\(l\(e\(te\=\)\=\)\=\)\=\)\==\(augroup\|buffer\|command\|dir\|event\|file\|help\|highlight\|menu\|option\|tag\|var\)"	contains=vimUserAttrbKey,vimUserAttrbCmplt,vimOper
+syn match   vimUserAttrb	contained	"-ra\(n\(ge\=\)\=\)\=\(=%\|=\d\+\)\="	contains=vimNumber,vimOper,vimUserAttrbKey
 syn match   vimUserAttrb	contained	"-cou\(nt\=\)\==\d\+"		contains=vimNumber,vimOper,vimUserAttrbKey
 syn match   vimUserAttrb	contained	"-b\(a\(ng\=\)\=\)\="		contains=vimOper,vimUserAttrbKey
 syn match   vimUserAttrb	contained	"-re\(g\(i\(s\(t\(er\=\)\=\)\=\)\=\)\=\)\="	contains=vimOper,vimUserAttrbKey
@@ -387,7 +387,7 @@ syn match  vimMark		"\<norm\s'[a-zA-Z0-9]"lc=5
 syn match  vimMark		"\<normal\s'[a-zA-Z0-9]"lc=7
 syn match  vimPlainMark	contained	"'[a-zA-Z0-9]"
 
-syn match  vimRegister		'[^(,;.]"[a-zA-Z0-9\-:.%#*=][^a-zA-Z_"]'lc=1
+syn match  vimRegister		'[^(,;.]"[a-zA-Z0-9\-:.%#*=][^a-zA-Z_"]'lc=1,me=e-1
 syn match  vimRegister		'\<norm\s\+"[a-zA-Z0-9]'lc=5
 syn match  vimRegister		'\<normal\s\+"[a-zA-Z0-9]'lc=7
 syn match  vimPlainRegister	contained	'"[a-zA-Z0-9\-:.%#*=]'
@@ -462,7 +462,7 @@ syn match   vimSynKeyOpt	contained	"\<\(contained\|transparent\|skipempty\|skipw
 " Syntax: match
 syn keyword vimSynType	contained	match	skipwhite nextgroup=vimSynMatchRegion
 syn region  vimSynMatchRegion	contained oneline matchgroup=vimGroupName start="\k\+" end="$" contains=vimComment,vimSynContains,vimSynError,vimSynMtchOpt,vimSynNextgroup,vimSynRegPat
-syn match   vimSynMtchOpt	contained	"\<\(contained\|excludenl\|transparent\|skipempty\|skipwhite\|skipnl\)\>"
+syn match   vimSynMtchOpt	contained	"\<\(contained\|excludenl\|transparent\|skipempty\|skipwhite\|skipnl\|display\|fold\)\>"
 
 " Syntax: off and on
 syn keyword vimSynType	contained	off	on
@@ -470,7 +470,7 @@ syn keyword vimSynType	contained	off	on
 " Syntax: region
 syn keyword vimSynType	contained	region	skipwhite nextgroup=vimSynRegion
 syn region  vimSynRegion	contained oneline matchgroup=vimGroupName start="\k\+" skip="\\\\\|\\|" end="$\||" contains=vimSynContains,vimSynNextgroup,vimSynRegOpt,vimSynReg,vimSynMtchGrp
-syn match   vimSynRegOpt	contained	"\<\(contained\|excludenl\|transparent\|skipempty\|skipwhite\|skipnl\|oneline\|keepend\)\>"
+syn match   vimSynRegOpt	contained	"\<\(contained\|excludenl\|transparent\|skipempty\|skipwhite\|skipnl\|oneline\|keepend\|display\|fold\)\>"
 syn match   vimSynReg		contained	"\(start\|skip\|end\)="he=e-1	nextgroup=vimSynRegPat
 syn match   vimSynMtchGrp	contained	"matchgroup="	nextgroup=vimGroup,vimHLGroup
 syn region  vimSynRegPat	contained oneline	start="!"  skip="\\\\\|\\!"  end="!"  contains=vimPatSep,vimNotPatSep,vimSynPatRange,vimSynNotPatRange nextgroup=vimSynPatMod
@@ -551,13 +551,12 @@ syn region vimHiLink	contained oneline matchgroup=vimCommand start="link" end="$
 " Angle-Bracket Notation (tnx to Michael Geddes)
 " ======================
 syn case ignore
-syn match vimNotation	"<\([scam]-\)\{0,4}\(f\d\{1,2}\|[^ \t:]\|cr\|lf\|linefeed\|return\|del\(ete\)\=\|bs\|backspace\|tab\|esc\|right\|left\|Help\|Undo\|Insert\|Ins\|k\=Home\|k \=End\|kPlus\|kMinus\|kDivide\|kMultiply\|kEnter\|k\=\(page\)\=\(\|down\|up\)\)>" contains=vimBracket
-syn match vimNotation	"<\([scam2-4]-\)\{0,4}\(right\|left\|middle\)\(mouse\|drag\|release\)>" contains=vimBracket
-syn match vimNotation	"<\(bslash\|space\|bar\|nop\|nul\|lt\)>"		contains=vimBracket
-syn match vimNotation	'<C-R>[0-9a-z"%#:.\-=]'he=e-1			contains=vimBracket
-syn match vimNotation	'<\(line[12]\|count\|bang\|reg\|args\|lt\|[qf]-args\)>'	contains=vimBracket
-syn match vimBracket contained	"[<>]"
-syn match vimBracket contained	"[<>]"
+syn match vimNotation	"\\<\([scam]-\)\{0,4}\(f\d\{1,2}\|[^ \t:]\|cr\|lf\|linefeed\|return\|del\(ete\)\=\|bs\|backspace\|tab\|esc\|right\|left\|Help\|Undo\|Insert\|Ins\|k\=Home\|k \=End\|kPlus\|kMinus\|kDivide\|kMultiply\|kEnter\|k\=\(page\)\=\(\|down\|up\)\)>" contains=vimBracket
+syn match vimNotation	"\\<\([scam2-4]-\)\{0,4}\(right\|left\|middle\)\(mouse\|drag\|release\)>" contains=vimBracket
+syn match vimNotation	"\\<\(bslash\|space\|bar\|nop\|nul\|lt\)>"		contains=vimBracket
+syn match vimNotation	'\\<C-R>[0-9a-z"%#:.\-=]'he=e-1			contains=vimBracket
+syn match vimNotation	'\\<\(line[12]\|count\|bang\|reg\|args\|lt\|[qf]-args\)>'	contains=vimBracket
+syn match vimBracket contained	"[\\<>]"
 syn case match
 
 " Control Characters

@@ -138,7 +138,7 @@ HTMLS = \
 .SUFFIXES:
 .SUFFIXES: .c .o .txt .html
 
-all: tags vim.man vimtutor.man xxd.man ctags.man
+all: tags vim.man vimtutor.man xxd.man
 
 tags: doctags $(DOCS)
 	./doctags $(DOCS) | sort >tags
@@ -155,12 +155,6 @@ vimtutor.man: vimtutor.1
 
 xxd.man: xxd.1
 	nroff -man xxd.1 | sed -e s/.//g > xxd.man
-
-ctags.man: ctags.1
-	nroff -man ctags.1 | sed -e s/.//g > ctags.man
-
-ctags.1: ../../src/ctags/ctags.1
-	cp ../../src/ctags/ctags.1 ctags.1
 
 # Awk version of .txt to .html conversion.
 html: noerrors tags tags.ref $(HTMLS)

@@ -1,4 +1,4 @@
-*intro.txt*     For Vim version 5.7.  Last change: 2000 Jun 03
+*intro.txt*     For Vim version 5.8.  Last change: 2001 May 31
 
 
 		  VIM REFERENCE MANUAL    by Bram Moolenaar
@@ -55,12 +55,15 @@ by O'Reilly.  The sixth edition includes a chapter on Vim.  ISBN:
 ==============================================================================
 2. Vim on the internet					*internet*
 
-			*www* *faq* *FAQ* *ftp* *distribution* *download*
+		*www* *faq* *FAQ* *ftp* *distribution* *download* *vim-online*
+Vim online is a site where users can exchange Vim scripts, tips and other
+things.  It has links to all other places.
 The Vim pages contain the most recent information about Vim.  They also
 contain links to the most recent version of Vim.  The FAQ is a list of
 Frequently Asked Questions.  Read this if you have problems.
 
-	VIM home page:	http://www.vim.org/
+	Vim online:	http://vim.sf.net/
+	Vim pages:	http://www.vim.org/
 	Latest news:	http://www.vim.org/news.html
 	VIM FAQ:	http://www.vim.org/faq/
 	Downloading:	ftp://ftp.vim.org/pub/vim/MIRRORS
@@ -72,7 +75,7 @@ See http://www.vim.org/usenet.html.  This group is also for other editors.  If
 you write about Vim, don't forget to mention that.
 
 						*mail-list* *maillist*
-There are four mailing lists for Vim:
+There are several mailing lists for Vim:
 <vim@vim.org>
 	For discussions about using existing versions of Vim: Useful mappings,
 	questions, answers, where to get a specific version, etc.
@@ -536,12 +539,14 @@ Insert Normal mode	Entered when CTRL-O given in Insert mode.  This is
 			shown at the bottom of the window.
 
 Insert Visual mode	Entered when starting a Visual selection from Insert
-			mode.  When the Visual selection ends, Vim returns to
-			Insert mode.
+			mode, e.g., by using CTRL-O and then "v", "V" or
+			CTRL-V.  When the Visual selection ends, Vim returns
+			to Insert mode.
 			If the 'showmode' option is on "-- (insert) VISUAL --"
 			is shown at the bottom of the window.
 
 Insert Select mode	Entered when starting Select mode from Insert mode.
+			E.g., by dragging the mouse or <S-Right>.
 			When the Select mode ends, Vim returns to Insert mode.
 			If the 'showmode' option is on "-- (insert) SELECT --"
 			is shown at the bottom of the window.
@@ -560,7 +565,7 @@ Normal mode when you see the screen flash or hear the bell after you type
 FROM mode								 ~
 Normal			v V ^V	  *4	 *1	    R	    : / ? !   Q
 Visual		 *2		  ^G	 c C	    --	      :       --
-Select		 *5	^O ^G		 *6	    --	      :       --
+Select		 *5	^O ^G		 *6	    --	      --      --
 Insert		 <Esc>	  --	  --		  <Insert>    --      --
 Replace		 <Esc>	  --	  --	<Insert>	      --      --
 Command-line	 *3	  --	  --	 :start	    --		      --
@@ -591,6 +596,7 @@ Ex		 :vi	  --	  --	 --	    --	      --
    - use a non-printable command to move the cursor while keeping the Shift
      key pressed, and the 'selectmode' option contains "key"
    - use "v", "V" or "CTRL-V" while 'selectmode' contains "cmd"
+   - use "gh", "gH" or "g CTRL-H"  |g_CTRL-H|
 *5 Go from Select mode to Normal mode by using a non-printable command to move
    the cursor, without keeping the Shift key pressed.
 *6 Go from Select mode to Insert mode by typing a printable character.  The

@@ -1,4 +1,4 @@
-*editing.txt*   For Vim version 5.7.  Last change: 2000 May 05
+*editing.txt*   For Vim version 5.8.  Last change: 2001 Jan 18
 
 
 		  VIM REFERENCE MANUAL    by Bram Moolenaar
@@ -174,6 +174,8 @@ If you want to always use ":confirm", set the 'confirm' option.
 			{command}.  At present this works for ":e", ":w",
 			":r", ":sp", ":mkexrc", ":mkvimrc" and ":mksession".
 			{only in Win32, Motif and Athena GUI}
+			When ":browse" is not supported it's ignored,
+			{command} is executed without a dialog.
 
 The syntax is best shown via some examples:
 >	:browse e $vim/foo
@@ -336,13 +338,13 @@ format <CR><NL> is used.  Also see |DOS-format-write|.
 You can read a file in DOS format and write it in Unix format.  This will
 replace all <CR><NL> pairs by <NL> (assuming 'fileformats' includes "dos"):
 >  :e file
->  :set 'fileformat'=unix
+>  :set fileformat=unix
 >  :w
 If you read a file in Unix format and write with DOS format, all <NL>
 characters will be replaced with <CR><NL> (assuming 'fileformats' includes
 "unix"):
 >  :e file
->  :set 'fileformat'=dos
+>  :set fileformat=dos
 >  :w
 
 If you start editing a new file and the 'fileformats' option is not empty

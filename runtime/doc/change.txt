@@ -1,4 +1,4 @@
-*change.txt*    For Vim version 5.7.  Last change: 2000 Jun 07
+*change.txt*    For Vim version 5.8.  Last change: 2001 Jan 04
 
 
 		  VIM REFERENCE MANUAL    by Bram Moolenaar
@@ -107,12 +107,14 @@ gJ			Join [count] lines, with a minimum of two lines.
 			If a [range] has equal start and end values, this
 			command does nothing.  The default behavior is to
 			join the current line with the line below it.
+			{not in Vi: !}
 
 :[range]j[oin][!] {count}
 			Join {count} lines, starting with [range] (default:
 			current line |cmdline-ranges|).  Same as "J", except
 			with [!] the join does not insert or delete any
 			spaces.
+			{not in Vi: !}
 
 These commands delete the <EOL> between lines.  This has the effect of joining
 multiple lines into one line.  You can repeat these commands (except ":j") and
@@ -171,11 +173,14 @@ gR			Enter Virtual replace mode: Each character you type
 ["x]S			Delete [count] lines [into register x] and start
 			insert.  Synonym for "cc" (linewise).
 
-{Visual}["x]c	or
-{Visual}["x]s	or					*v_c* *v_r* *v_s*
-{Visual}["x]r		Delete the highlighted text [into register x] and
+{Visual}["x]c	or					*v_c* *v_s*
+{Visual}["x]s		Delete the highlighted text [into register x] and
 			start insert (for {Visual} see |Visual-mode|).  {not
 			in Vi}
+
+							*v_r* 
+{Visual}["x]r		Doesn't work yet, it's supposed to replace all
+			selected characters by the next typed character.
 
 {Visual}["x]C	or
 {Visual}["x]S	or					*v_C* *v_R* *v_S*
@@ -205,7 +210,11 @@ Special case: "cw" and "cW" work the same as "ce" and "cE" if the cursor is
 on a non-blank.  This is because Vim interprets "cw" as change-word, and a
 word does not include the following white space.  {Vi: "cw" when on a blank
 followed by other blanks changes only the first blank; this is probably a
-bug, because "dw" deletes all the blanks}
+bug, because "dw" deletes all the blanks; use the 'w' flag in 'cpoptions' to
+make it work like Vi anyway}
+
+If you prefer "cw" to include the space after a word, use this mapping:
+>	:map cw dwi
 
 							*:c* *:ch* *:change*
 :{range}c[hange]	Replace lines of text with some different text.
@@ -269,6 +278,11 @@ g~~			Switch case of current line. {not in Vi}.
 
 							*gU* *uppercase*
 gU{motion}		Make {motion} text uppercase. {not in Vi}
+			Example:
+>				:map! <C-F> <Esc>gUiw`]a
+			This works in Insert mode: press CTRL-F to make the
+			before the cursor upper case.  Handy to type words in
+			lower case and then make them uppercase.
 
 gUgU							*gUgU* *gUU*
 gUU			Make current line uppercase. {not in Vi}.
@@ -283,7 +297,7 @@ gu{motion}		Make {motion} text lowercase. {not in Vi}
 gugu							*gugu* *guu*
 guu			Make current line lowercase. {not in Vi}.
 
-							*g?*
+							*g?* *rot13*
 g?{motion}		Rot13 encode {motion} text. {not in Vi}
 
 							*v_g?*
@@ -852,7 +866,7 @@ and ":put" commands and with CTRL-R.  {not in Vi}
 	":	Contains the most recent executed command-line.  Example: Use
 		"@:" to repeat the previous command-line command.
 		The command-line is only stored in this register when at least
-		one character of it was typed.  Thus it remains unchanged of
+		one character of it was typed.  Thus it remains unchanged if
 		the command was completely from a mapping.
 
 6. Expression register "=				*quote_=* *quote=*
@@ -1199,7 +1213,7 @@ typing certain characters or commands in certain contexts.  The default is
 
 	"0{"	if you type '{' as the first character in a line
 	"0}"	if you type '}' as the first character in a line
-	":"	if you type ':' anywhere
+	":"	if you type ':' after a label or case statement
 	"0#"	if you type '#' as the first character in a line
 	"!^F"	if you type CTRL-F (which is not inserted)
 	"o"	if you type a <CR> anywhere or use the "o" command (not in
@@ -1234,6 +1248,8 @@ Special key names:
 	mode).
 'O'	Reindent a line when you use the "O" command.
 'e'	Reindent a line that starts with "else" when you type the second 'e'.
+':'	Reindent a line when a ':' is typed which is after a label or case
+	statement.  Don't reindent for a ":" in "class::method" for C++.
 
 If you really want to reindent when you type 'o', 'O', 'e', '0', '<', '>', '*'
 or '!', use "<o>", "<O>", "<e>", "<0>", "<<>", "<>>", "<*>" or "<!>",
@@ -1283,7 +1299,7 @@ assume a 'shiftwidth' of 4.
 		  }		      }			  }
 
 	nN    Add N to the prevailing indent for a statement after an "if",
-	      "while", etc., if it is Not inside a set of braces.  This is
+	      "while", etc., if it is NOT inside a set of braces.  This is
 	      useful if you want a different indent when there is no '{'
 	      before the statement from when there is a '{' before it.
 	      (default 0).

@@ -1,4 +1,4 @@
-*message.txt*   For Vim version 5.7.  Last change: 2000 Jun 07
+*message.txt*   For Vim version 5.8.  Last change: 2001 Jan 18
 
 
 		  VIM REFERENCE MANUAL    by Bram Moolenaar
@@ -258,7 +258,7 @@ and |+X11| features.
 
 This is an overview of various messages that Vim gives:
 
-							*hit-return*
+						*hit-return* *press-return*
 >  Press RETURN or enter command to continue
 This message is given when there is something on the screen for you to read,
 and the screen is about to be redrawn:

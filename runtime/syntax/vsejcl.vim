@@ -38,7 +38,7 @@ if version >= 508 || !exists("did_vsejcl_syntax")
   HiLink vsejclKeyword		Statement
   HiLink vsejclObject		Constant
   HiLink vsejclString		Constant
-  HiLink vsejclMisc			Special
+  HiLink vsejclMiscq		Special
   HiLink vsejclParms		Constant
 
   delcommand HiLink

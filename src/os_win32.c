@@ -16,7 +16,7 @@
  * Portions lifted from the Win32 SDK samples, the MSDOS-dependent code,
  * NetHack 3.1.3, GNU Emacs 19.30, and Vile 5.5.
  *
- * George V. Reilly <georgere@microsoft.com> wrote most of this.
+ * George V. Reilly <george@reilly.org> wrote most of this.
  * Roger Knobbe <rogerk@wonderware.com> did the initial port of Vim 3.0.
  */
 

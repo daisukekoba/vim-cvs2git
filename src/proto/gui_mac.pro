@@ -7,7 +7,7 @@
 pascal Boolean WaitNextEventWrp __PARMS((EventMask eventMask, EventRecord
 *theEvent, UInt32 sleep, RgnHandle mouseRgn));
 pascal void gui_mac_scroll_action __PARMS((ControlHandle theControl, short partCode));
-pascal void gui_mac_drag_thumb __PARMS((ControlHandle theControl));
+pascal void gui_mac_drag_thumb __PARMS((ControlHandle theControl, short partCode));
 void gui_mac_handle_event __PARMS((EventRecord *event));
 void gui_mac_doMouseDown __PARMS((EventRecord *theEvent));
 void gui_mac_do_key __PARMS((EventRecord *theEvent));

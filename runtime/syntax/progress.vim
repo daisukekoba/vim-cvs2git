@@ -174,7 +174,7 @@ if version >= 508 || !exists("did_progress_syntax_inits")
   endif
 
   " The default methods for highlighting. Can be overridden later.
-  HiLink ProgressByte			    Number
+  HiLink ProgressByte				Number
   HiLink ProgressCase				Repeat
   HiLink ProgressComment			StatusLine
   HiLink ProgressConditional		Conditional

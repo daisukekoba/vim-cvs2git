@@ -1,10 +1,15 @@
 " Vim syntax file
 " Language:	Vim help file
 " Maintainer:	Bram Moolenaar (Bram@vim.org)
-" Last Change:	2000 Jun 06
+" Last Change:	2001 Apr 25
 
-" Remove any old syntax stuff hanging around
-syn clear
+" For version 5.x: Clear all syntax items
+" For version 6.x: Quit when a syntax file was already loaded
+if version < 600
+  syntax clear
+elseif exists("b:current_syntax")
+  finish
+endif
 
 syn match helpHeadline		"^[A-Z ]\+[ ]\+\*"me=e-1
 syn match helpSectionDelim	"^=\{3,}.*==$"
@@ -46,8 +51,16 @@ syn match helpSpecial		"CTRL-{char}"
 syn region helpNotVi		start="{Vi[: ]" start="{not" start="{only" end="}" contains=helpLeadBlank,helpHyperTextJump
 syn match helpLeadBlank		"^\s\+"
 
-if !exists("did_help_syntax_inits")
-  let did_help_syntax_inits = 1
+" Define the default highlighting.
+" For version 5.7 and earlier: only when not done already
+" For version 5.8 and later: only when an item doesn't have highlighting yet
+if version >= 508 || !exists("did_help_syntax_inits")
+  if version < 508
+    let did_help_syntax_inits = 1
+    command -nargs=+ HiLink hi link <args>
+  else
+    command -nargs=+ HiLink hi def link <args>
+  endif
 
   hi link helpExampleStart	helpIgnore
   hi link helpIgnore		Ignore
@@ -63,8 +76,10 @@ if !exists("did_help_syntax_inits")
   hi link helpSpecial		Special
   hi link helpNote		Todo
   hi link Subtitle		Identifier
+
+  delcommand HiLink
 endif
 
 let b:current_syntax = "help"
 
-" vim: ts=8
+" vim: ts=8 sw=2

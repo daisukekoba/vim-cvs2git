@@ -48,10 +48,8 @@ mac_expandpath(
     char_u	*buf;
     char_u	*p, *s, *e, dany;
     int		start_len, c;
-    char	dummy;
     char_u	*pat;
     vim_regexp	*prog;
-    int		matches;
 
     start_len = gap->ga_len;
     buf = alloc(STRLEN(path) + BASENAMELEN + 5);/* make room for file name */
@@ -521,9 +519,6 @@ slash_n_colon_adjust (buf)
      */
 
     char_u  temp[MAXPATHL];
-    char_u  *dot;
-    char_u  *slash;
-    char_u  *searching;
     char_u  *first_colon = vim_strchr(buf, ':');
     char_u  *first_slash = vim_strchr(buf, '/');
     int     full = TRUE;

@@ -268,7 +268,7 @@ XSUBPP_TYPEMAP = $(PERL)\lib\ExtUtils\typemap
 
 conflags = /nologo /subsystem:$(SUBSYSTEM) /incremental:no
 
-all:	$(VIM) vimrun.exe install.exe uninstal.exe ctags/ctags.exe xxd/xxd.exe
+all:	$(VIM) vimrun.exe install.exe uninstal.exe xxd/xxd.exe
 
 $(VIM): $(OUTDIR) $(OBJ) $(GUI_OBJ) $(OLE_OBJ) $(OLE_IDL) $(PERL_OBJ) $(PYTHON_OBJ) $(TCL_OBJ) $(SNIFF_OBJ) $(OUTDIR)\version.obj
 	$(link) $(linkdebug) $(conflags) -out:$*.exe $(OBJ) $(GUI_OBJ) $(OLE_OBJ) $(PERL_OBJ) $(PYTHON_OBJ) $(TCL_OBJ) $(SNIFF_OBJ) \
@@ -290,11 +290,6 @@ uninstal.exe: uninstal.c
 
 vimrun.exe: vimrun.c
 	$(CC) vimrun.c
-
-ctags/ctags.exe: ctags/main.c
-	cd ctags
-	$(MAKE) -f Makefile.mvc
-	cd ..
 
 xxd/xxd.exe: xxd/xxd.c
 	cd xxd
@@ -319,9 +314,6 @@ clean:
 	- del vimrun.exe
 	- del install.exe
 	- del uninstal.exe
-	cd ctags
-	$(MAKE) -f Makefile.mvc clean
-	cd ..
 	cd xxd
 	$(MAKE) -f Makefile.w32 clean
 	cd ..

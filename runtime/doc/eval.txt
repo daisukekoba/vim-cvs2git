@@ -1,4 +1,4 @@
-*eval.txt*      For Vim version 5.7.  Last change: 2000 Jun 07
+*eval.txt*      For Vim version 5.8.  Last change: 2001 May 29
 
 
 		  VIM REFERENCE MANUAL    by Bram Moolenaar
@@ -344,7 +344,7 @@ does expand all variables that the shell knows about.  Example:
 >   echo $version
 >   echo expand("$version")
 The first one probably doesn't echo anything, the second echoes the $version
-variable (if you shell supports it).
+variable (if your shell supports it).
 
 
 internal variable					*expr-variable*
@@ -398,7 +398,7 @@ v:errmsg	Last given error message.  It's allowed to set this variable.
 		Example:
 >	:let errmsg = ""
 >	:next
->	:if (errmsg != "")
+>	:if errmsg != ""
 >	:  ...
 		"errmsg" also works, for backwards compatibility.
 
@@ -1269,6 +1269,7 @@ system({expr})	Get the output of the shell command {expr}.  Note: newlines
 		">" and stdout plus stderr with ">&" (csh) or use "2>" to
 		capture stderr (sh).
 		The resulting error code can be found in |v:shell_error|.
+		This function will fail in |restricted-mode|.
 
 						*tempname()* *temp-file-name*
 tempname()

@@ -1,4 +1,4 @@
-*os_mac.txt*    For Vim version 5.7.  Last change: 2000 Jun 15
+*os_mac.txt*    For Vim version 5.8.  Last change: 2000 Jun 15
 
 
 		  VIM REFERENCE MANUAL    by Bram Moolenaar

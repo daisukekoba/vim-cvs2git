@@ -128,8 +128,7 @@ Building Vim on OpenNT 2.0 on Windows NT 4.0, with Softway's prerelease gcc:
 	#include config.mk
 	.include "config.mk"
 4. Change all install links to be "ln -f" and not "ln -s".
-5. Change to the 'ctags' directory and configure.
-6. Edit the Makefile and remove spurious spaces from lines 99 and 114.
-7. Change slink to "ln -f" from "ln -s".
-8. Return to the src directory.
-9. make
+5. Edit the Makefile and remove spurious spaces from lines 99 and 114.
+6. Change slink to "ln -f" from "ln -s".
+7. Return to the src directory.
+8. make

@@ -1,4 +1,4 @@
-*os_beos.txt*	For Vim version 5.7.  Last change: 1999 Sep 14
+*os_beos.txt*	For Vim version 5.8.  Last change: 2001 May 09
 
 
 		  VIM REFERENCE MANUAL    by Bram Moolenaar
@@ -85,7 +85,7 @@ If you want to install Vim by hand, you must copy Vim to $HOME/config/bin, and
 create a bunch of symlinks to it ({g,r,rg}{vim,ex,view}). Furthermore you must
 copy Vims configuration files to $HOME/config/share/vim:
 vim-5.0s/{*.vim,doc,syntax}.  For completeness, you should also copy the nroff
-manual pages to $HOME/config/man/man1. Don't forget ctags/ctags and xxd/xxd!
+manual pages to $HOME/config/man/man1. Don't forget xxd/xxd!
 
 Obviously, you need the unlimited linker to actually link Vim. See
 http://www.metrowerks.com for purchasing the CodeWarrior compiler for BeOS.

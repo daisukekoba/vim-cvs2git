@@ -664,7 +664,7 @@ mch_FullName(fname, buf, len, force)
 	retval = lock2name(l, buf, (long)len - 1);
 	UnLock(l);
 	if (mch_isdir(fname))
-	    STRCAT(buf, "/");
+	    add_pathsep(buf);
     }
     else if (force || !mch_isFullName(fname))	    /* not a full path yet */
     {
@@ -697,7 +697,7 @@ mch_FullName(fname, buf, len, force)
 mch_isFullName(fname)
     char_u	*fname;
 {
-    return (vim_strchr(fname, ':') != NULL);
+    return (vim_strchr(fname, ':') != NULL && *fname != ':');
 }
 
 /*

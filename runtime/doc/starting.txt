@@ -1,4 +1,4 @@
-*starting.txt*  For Vim version 5.7.  Last change: 2000 Feb 14
+*starting.txt*  For Vim version 5.8.  Last change: 2000 Nov 16
 
 
 		  VIM REFERENCE MANUAL    by Bram Moolenaar
@@ -172,7 +172,8 @@ argument.
 							*-Z* *restricted-mode*
 -Z		Restricted mode.  All commands that make use of an external
 		shell are disabled.  This includes suspending with CTRL-Z,
-		":sh", filtering, etc.
+		":sh", filtering, the system() function, backtick expansion,
+		etc.
 
 							*-g*
 -g		Start Vim in GUI mode.  See |gui|.

@@ -1,4 +1,4 @@
-README_dossrc.txt for version 5.7 of Vim: Vi IMproved.
+README_dossrc.txt for version 5.8 of Vim: Vi IMproved.
 
 See "README.txt" for general information about Vim.
 See "README_dos.txt" for installation instructions for MS-DOS and MS-Windows.
