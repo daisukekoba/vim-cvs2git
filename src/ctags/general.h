@@ -39,7 +39,7 @@
 /*  This is a helpful internal feature of later versions (> 2.7) of GCC
  *  to prevent warnings about unused variables.
  */
-#if __GNUC__ > 2  ||  (__GNUC__ == 2  &&  __GNUC_MINOR__ >= 7)
+#if (__GNUC__ > 2  ||  (__GNUC__ == 2  &&  __GNUC_MINOR__ >= 7)) && !defined(__APPLE_CC__)
 # define __unused__	__attribute__((unused))
 #else
 # define __unused__
