@@ -1408,6 +1408,10 @@ getexmodeline(c, dummy, indent)
     int			vcol = 0;
 #endif
 
+    /* Switch cursor on now.  This avoids that it happens after the "\n", which
+     * confuses the system function that computes tabstops. */
+    cursor_on();
+
     /* always start in column 0; write a newline if necessary */
     compute_cmdrow();
     if (msg_col)
