@@ -1198,10 +1198,10 @@ getcount:
     case K_RIGHTRELEASE:
 	(void)do_mouse(oap, ca.cmdchar, BACKWARD, ca.count1, 0);
 	break;
+#endif
 
     case K_IGNORE:
 	break;
-#endif
 
 #ifdef USE_GUI
 /*
