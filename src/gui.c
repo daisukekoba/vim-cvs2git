@@ -1542,9 +1542,9 @@ gui_outstr_nowrap(s, len, flags, fg, bg, back)
     /* Draw the text */
     gui_mch_draw_string(gui.row, col, s, len, draw_flags);
 
-    /* May need to invert it when it's part of the selection (assumes len==1) */
+    /* May need to invert it when it's part of the selection. */
     if (flags & GUI_MON_NOCLEAR)
-	clip_may_redraw_selection(gui.row, col);
+	clip_may_redraw_selection(gui.row, col, len);
 
     if (!(flags & (GUI_MON_IS_CURSOR | GUI_MON_TRS_CURSOR)))
     {
@@ -1609,7 +1609,7 @@ gui_redraw(x, y, w, h)
     row2 = Y_2_ROW(y + h - 1);
     col2 = X_2_COL(x + w - 1);
 
-    (void)gui_redraw_block(row1, col1, row2, col2, 0);
+    (void)gui_redraw_block(row1, col1, row2, col2, GUI_MON_NOCLEAR);
 
     /*
      * We may need to redraw the cursor, but don't take it upon us to change
@@ -1620,9 +1620,6 @@ gui_redraw(x, y, w, h)
      */
     if (gui.row == gui.cursor_row)
 	gui_update_cursor(FALSE, TRUE);
-
-    if (clipboard.state != SELECT_CLEARED)
-	clip_redraw_selection(x, y, w, h);
 }
 
 /*

@@ -321,6 +321,27 @@ eval_to_string(arg, nextcmd)
     return retval;
 }
 
+# if defined(STATUSLINE) || defined(PROTO)
+/*
+ * Call eval_to_string() with "sandbox" set and not using local variables.
+ */
+    char_u *
+eval_to_string_safe(arg, nextcmd)
+    char_u	*arg;
+    char_u	**nextcmd;
+{
+    char_u	*retval;
+    void	*save_funccalp;
+
+    save_funccalp = save_funccal();
+    ++sandbox;
+    retval = eval_to_string(arg, nextcmd);
+    --sandbox;
+    restore_funccal(save_funccalp);
+    return retval;
+}
+# endif
+
 /*
  * ":let var = expr"	assignment command.
  * ":let var"		list one variable value
@@ -4822,7 +4843,7 @@ do_function(eap, getline, cookie)
 	return;
     }
 
-    if (!isupper(*eap->arg))
+    if (!isupper(*eap->arg) && !eap->skip)
     {
 	EMSG2("Function name must start with a capital: %s", eap->arg);
 	return;
@@ -4858,7 +4879,7 @@ do_function(eap, getline, cookie)
     name = eap->arg;
     for (p = name; isalpha(*p) || isdigit(*p) || *p == '_'; ++p)
 	;
-    if (p == name)
+    if (p == name && !eap->skip)
     {
 	EMSG("Function name required");
 	return;
@@ -4867,8 +4888,12 @@ do_function(eap, getline, cookie)
     p = skipwhite(p);
     if (*p != '(')
     {
-	EMSG2("Missing '(': %s", name);
-	return;
+	if (!eap->skip)
+	{
+	    EMSG2("Missing '(': %s", name);
+	    return;
+	}
+	p = vim_strchr(p, '(');
     }
     p = skipwhite(p + 1);
 
@@ -4893,7 +4918,8 @@ do_function(eap, getline, cookie)
 		++p;
 	    if (arg == p || isdigit(*arg))
 	    {
-		EMSG2("Illegal argument: %s", arg);
+		if (!eap->skip)
+		    EMSG2("Illegal argument: %s", arg);
 		goto erret;
 	    }
 	    if (ga_grow(&newargs, 1) == FAIL)
@@ -4915,7 +4941,8 @@ do_function(eap, getline, cookie)
 	p = skipwhite(p);
 	if (mustend && *p != ')')
 	{
-	    EMSG2(e_invarg2, eap->arg);
+	    if (!eap->skip)
+		EMSG2(e_invarg2, eap->arg);
 	    goto erret;
 	}
     }
@@ -4941,7 +4968,8 @@ do_function(eap, getline, cookie)
 
     if (*p != NUL && *p != '"' && *p != '\n')
     {
-	EMSG(e_trailing);
+	if (!eap->skip)
+	    EMSG(e_trailing);
 	goto erret;
     }
 

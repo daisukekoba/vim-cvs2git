@@ -1793,6 +1793,9 @@ swapchar(op_type, pos)
     if (c & 0xff00)	/* No lower/uppercase letter */
 	return;
 #endif
+    /* Only do rot13 encoding for ASCII characters. */
+    if (c >= 0x80 && op_type == OP_ROT13)
+	return;
     nc = c;
     if (islower(c))
     {
@@ -3939,6 +3942,10 @@ do_addsub(command, Prenum1)
 	*ptr++ = hex;
 	--length;
     }
+
+    /* truncate to max length of a number */
+    if (length >= NUMBUFLEN - 1)
+	length = NUMBUFLEN - 2;
 
     /*
      * Put the number characters in buf2[].

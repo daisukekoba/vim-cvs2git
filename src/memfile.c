@@ -1213,15 +1213,17 @@ mf_do_open(mfp, fname, trunc_file)
 #endif
 
     /*
-     * try to open the file
+     * Try to open the file.  First delete any existing file.
      */
+    if (trunc_file)
+	mch_remove(mfp->mf_fname);
     mfp->mf_fd = open(
 #ifdef VMS
 	    vms_fixfilename(mfp->mf_fname),
 #else
 	    (char *)mfp->mf_fname,
 #endif
-	    (trunc_file ? (O_CREAT | O_RDWR | O_TRUNC) : (O_RDONLY)) | O_EXTRA
+	    (trunc_file ? (O_CREAT | O_RDWR | O_EXCL) : (O_RDONLY)) | O_EXTRA
 #if defined(UNIX) || defined(RISCOS)		 /* open in rw------- mode */
 		    , (mode_t)0600
 #endif

@@ -3401,6 +3401,56 @@ IsDBCSTrailByte(char *base, char *p)
 
 #define UNIBUFSIZE 2000		/* a big buffer */
 
+#ifdef FEAT_RIGHTLEFT
+/*
+ * What is this for?  In the case where you are using Win98 or Win2K or later,
+ * and you are using a Hebrew font (or Arabic!), Windows does you a favor and
+ * reverses the string sent to the TextOut... family.  This sucks, because we
+ * go to a lot of effort to do the right thing, and there doesn't seem to be a
+ * way to tell Windblows not to do this!
+ *
+ * The short of it is that this 'RevOut' only gets called if you are running
+ * one of the new, "improved" MS OSes, and only if you are running in
+ * 'rightleft' mode.  It makes display take *slightly* longer, but not
+ * noticeably so.
+ */
+    static void
+RevOut( HDC s_hdc,
+	int col,
+	int row,
+	UINT foptions,
+	CONST RECT *pcliprect,
+	LPCTSTR text,
+	UINT len,
+	CONST INT *padding)
+{
+    int		ix;
+    static int	special = -1;
+
+    if (special == -1)
+    {
+	/* Check windows version: special treatment is needed if it is NT 5 or
+	 * Win98 or higher. */
+	if  ((os_version.dwPlatformId == VER_PLATFORM_WIN32_NT
+		    && os_version.dwMajorVersion >= 5)
+		|| (os_version.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS
+		    && (os_version.dwMajorVersion > 4
+			|| (os_version.dwMajorVersion == 4
+			    && os_version.dwMinorVersion > 0))))
+	    special = 1;
+	else
+	    special = 0;
+    }
+
+    if (special)
+	for (ix = 0; ix < len; ++ix)
+	    ExtTextOut(s_hdc, col + TEXT_X(ix), row, foptions,
+					    pcliprect, text + ix, 1, padding);
+    else
+	ExtTextOut(s_hdc, col, row, foptions, pcliprect, text, len, padding);
+}
+#endif
+
     void
 gui_mch_draw_string(
     int		row,
@@ -3542,8 +3592,17 @@ gui_mch_draw_string(
 	}
 	else
 #endif
-	    ExtTextOut(s_hdc, TEXT_X(col), TEXT_Y(row),
+	{
+#ifdef FEAT_RIGHTLEFT
+	    /* ron: fixed Hebrew on Win98/Win2000 */
+	    if (curwin->w_p_rl)
+		RevOut(s_hdc, TEXT_X(col), TEXT_Y(row),
 				foptions, pcliprect, (char *)s, len, padding);
+	    else
+#endif
+		ExtTextOut(s_hdc, TEXT_X(col), TEXT_Y(row),
+				foptions, pcliprect, (char *)s, len, padding);
+	}
     }
 
     if (flags & DRAW_UNDERL)

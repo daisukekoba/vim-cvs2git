@@ -112,4 +112,11 @@ int mch_rename(const char *OldFile, const char *NewFile);
 # define mch_rename(src, dst) rename(src, dst)
 #endif
 
+#ifdef DJGPP
+# define vim_mkdir(x, y) mkdir((char *)(x), y)
+#else
+# define vim_mkdir(x, y) mkdir((char *)(x))
+#endif
+#define mch_rmdir(x) rmdir((char *)(x))
+
 #define mch_setenv(name, val, x) setenv(name, val, x)

@@ -897,7 +897,10 @@ BufferNew(BUF *buf)
     BufferObject *self;
 
     if (buf->python_ref)
+    {
 	self = buf->python_ref;
+	Py_INCREF(self);
+    }
     else
     {
 	self = PyObject_NEW(BufferObject, &BufferType);
@@ -1367,7 +1370,10 @@ WindowNew(WIN *win)
     WindowObject *self;
 
     if (win->python_ref)
+    {
 	self = win->python_ref;
+	Py_INCREF(self);
+    }
     else
     {
 	self = PyObject_NEW(WindowObject, &WindowType);

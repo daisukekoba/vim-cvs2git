@@ -31,12 +31,14 @@
 #include <stat.h>
 #include <unix.h>
 
+#if 0	    /* this doesn't work, because realloc() isn't redefined */
 /*
  * Use Macintosh subroutine to alloc the memory.
  * (malloc generate Ptr format hard to debug with ZoneRanger)
  */
-#define malloc(x) NewPtr(x)
-#define free(x)   DisposePtr((char *) x)
+# define malloc(x) NewPtr(x)
+# define free(x)   DisposePtr((char *) x)
+#endif
 
 /* This will go away when CMD_KEY fully tested */
 #define USE_CMD_KEY

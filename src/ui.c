@@ -742,20 +742,27 @@ clip_redraw_selection(x, y, w, h)
 }
 
 /*
- * Redraw the selection if character at "row,col" is inside of it.
+ * Redraw part of the selection if character at "row,col" is inside of it.
  */
     void
-clip_may_redraw_selection(row, col)
-    int	row, col;
+clip_may_redraw_selection(row, col, len)
+    int		row, col;
+    int		len;
 {
+    int		start = col;
+    int		end = col + len;
+
     if (clipboard.state != SELECT_CLEARED
-	    && ((row == clipboard.start.lnum
-		    && col >= (int)clipboard.start.col)
-		|| row > clipboard.start.lnum)
-	    && ((row == clipboard.end.lnum
-		    && col < (int)clipboard.end.col)
-		|| row < clipboard.end.lnum))
-	clip_invert_area(row, col, row, col + 1);
+	    && row >= clipboard.start.lnum
+	    && row <= clipboard.end.lnum)
+    {
+	if (row == clipboard.start.lnum && start < (int)clipboard.start.col)
+	    start = clipboard.start.col;
+	if (row == clipboard.end.lnum && end > (int)clipboard.end.col)
+	    end = clipboard.end.col;
+	if (end > start)
+	    clip_invert_area(row, start, row, end);
+    }
 }
 
 /*
@@ -1523,9 +1530,9 @@ clip_x11_request_selection(myShell, dpy)
     {
 	switch (i)
 	{
-	    case 0:  type = clipboard.xatom;
-	    case 1:  type = clipboard.xa_compound_text;
-	    case 2:  type = clipboard.xa_text;
+	    case 0:  type = clipboard.xatom;	break;
+	    case 1:  type = clipboard.xa_compound_text; break;
+	    case 2:  type = clipboard.xa_text;	break;
 	    default: type = XA_STRING;
 	}
 	XtGetSelectionValue(myShell, XA_PRIMARY, type,

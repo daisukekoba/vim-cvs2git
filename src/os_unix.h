@@ -85,6 +85,8 @@
 
 /* always use unlink() to remove files */
 #ifndef PROTO
+# define vim_mkdir(x, y) mkdir((char *)(x), y)
+# define mch_rmdir(x) rmdir((char *)(x))
 # define mch_remove(x) unlink((char *)(x))
 #endif
 
@@ -276,7 +278,7 @@
 # define TEMPNAME	"v?XXXXXX"
 # define TEMPNAMELEN	128
 #else
-# define TEMPDIRNAMES	"$TMPDIR", "/tmp", ""
+# define TEMPDIRNAMES	"$TMPDIR", "/tmp", ".", "$HOME"
 # define TEMPNAME	"v?XXXXXX"
 # define TEMPNAMELEN	256
 #endif

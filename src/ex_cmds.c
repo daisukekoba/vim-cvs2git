@@ -2961,6 +2961,17 @@ check_secure()
 	emsg(e_curdir);
 	return TRUE;
     }
+#ifdef HAVE_SANDBOX
+    /*
+     * In the sandbox more things are not allowed, including the things
+     * disallowed in secure mode.
+     */
+    if (sandbox != 0)
+    {
+	EMSG(e_sandbox);
+	return TRUE;
+    }
+#endif
     return FALSE;
 }
 
@@ -2988,7 +2999,7 @@ do_sub(eap)
     EXARG	*eap;
 {
     linenr_t	    lnum;
-    long	    i;
+    long	    i = 0;
     char_u	   *ptr;
     char_u	   *old_line;
     vim_regexp	   *prog;
@@ -3312,7 +3323,7 @@ do_sub(eap)
 			    break;
 			}
 			else if (i == 'n')
-			    goto skip;
+			    break;
 			else if (i == 'y')
 			    break;
 			else if (i == 'a')
@@ -3330,7 +3341,8 @@ do_sub(eap)
 #ifdef USE_MOUSE
 		    setmouse();
 #endif
-
+		    if (i == 'n')
+			goto skip;
 		    if (got_quit)
 			break;
 		}

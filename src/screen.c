@@ -1746,6 +1746,9 @@ win_line(wp, lnum, startrow, endrow)
 #ifdef USE_GUI
 		     && !gui.in_use
 #endif
+#ifdef MULTI_BYTE
+		     && !is_dbcs
+#endif
 					)
 	    {
 		if (screen_cur_col != Columns)
@@ -2873,7 +2876,7 @@ build_stl_str_hl(wp, out, fmt, fillchar, maxlen, hl)
 	    curwin = wp;
 	    curbuf = wp->w_buffer;
 
-	    str = eval_to_string(p, &t);
+	    str = eval_to_string_safe(p, &t);
 	    if (str != NULL && *str != 0)
 	    {
 		t = str;
@@ -2920,11 +2923,11 @@ build_stl_str_hl(wp, out, fmt, fillchar, maxlen, hl)
 		getvcol(wp, &wp->w_cursor, NULL, &virtcol, NULL);
 		wp->w_p_list = TRUE;
 	    }
-	    if (virtcol == (colnr_t)(!(State & INSERT) && empty_line
-			    ? 0 : (int)wp->w_cursor.col))
-	    {
+	    /* Don't display %V if it's the same as %c. */
+	    if (opt == STL_VIRTCOL_ALT
+		    && (virtcol == (colnr_t)(!(State & INSERT) && empty_line
+			    ? 0 : (int)wp->w_cursor.col)))
 		break;
-	    }
 	    num = (long)virtcol + 1;
 	    break;
 

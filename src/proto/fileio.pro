@@ -11,6 +11,7 @@ int vim_rename __ARGS((char_u *from, char_u *to));
 void check_timestamps __ARGS((int focus));
 int buf_check_timestamp __ARGS((BUF *buf, int focus));
 void write_lnum_adjust __ARGS((linenr_t offset));
+void vim_deltempdir __ARGS((void));
 char_u *vim_tempname __ARGS((int extra_char));
 void do_augroup __ARGS((char_u *arg));
 int check_ei __ARGS((void));
