@@ -900,11 +900,11 @@ close_window(win, free_buf)
 	{
 	    other_buffer = TRUE;
 	    apply_autocmds(EVENT_BUFLEAVE, NULL, NULL, FALSE, curbuf);
-	    if (!win_valid(win))
+	    if (!win_valid(win) || firstwin == lastwin)
 		return;
 	}
 	apply_autocmds(EVENT_WINLEAVE, NULL, NULL, FALSE, curbuf);
-	if (!win_valid(win))
+	if (!win_valid(win) || firstwin == lastwin)
 	    return;
     }
 #endif
@@ -930,7 +930,7 @@ close_window(win, free_buf)
  */
     close_buffer(win, win->w_buffer, free_buf, FALSE);
     /* autocommands may have closed the window already */
-    if (!win_valid(win))
+    if (!win_valid(win) || firstwin == lastwin)
 	return;
 
     win_new_height(wp, wp->w_height + win->w_height + win->w_status_height);
