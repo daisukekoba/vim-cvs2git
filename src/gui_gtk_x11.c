@@ -2205,7 +2205,7 @@ gui_mch_init_font(char_u * font_name)
     }
 
     if (gui.norm_font != 0)
-	gdk_font_unref(font);
+	gdk_font_unref(gui.norm_font);
     gui.norm_font = font;
 #ifdef USE_FONTSET
     if (font->type == GDK_FONT_FONTSET)
