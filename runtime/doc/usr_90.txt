@@ -1,0 +1,41 @@
+*usr_90.txt*	For Vim version 6.0ak.  Last change: 2001 Jun 02
+
+		     VIM USER MANUAL - by Bram Moolenaar
+		
+				Installing Vim
+
+
+Introduction.
+
+|90.1|  The runtime files
+|90.2|  Upgrading
+
+     Next chapter: |usr_91.txt|  Compiling Vim
+ Previous chapter: |usr_45.txt|  Select your language
+Table of contents: |usr_toc.txt|
+
+==============================================================================
+*90.1*  The runtime files
+
+When Vim is running, it uses a number of files for syntax highlighting, menus,
+this on-line help, etc.  These must be available on the system where Vim is
+running, otherwise many things won't work.  Two simple tests to check if Vim
+can find its runtime files: >
+	:help
+	:syntax on
+
+TODO
+
+==============================================================================
+*90.2*  Upgrading
+
+If you are running one version of Vim and want to install another, here is
+what to do.
+
+TODO
+
+==============================================================================
+
+Next chapter: |usr_91.txt|  Compiling Vim
+
+Copyright: see |manual-copyright|  vim:tw=78:
