@@ -1211,7 +1211,7 @@ regatom(flagp)
 			    regc(*regparse++);
 			else
 			    /* Characters assumed to be 8 bits */
-			    for (cu = 0; cu <= 255; cu++)
+			    for (cu = 1; cu <= 255; cu++)
 				if ((*func)(cu))
 				    regc(cu);
 		    }
