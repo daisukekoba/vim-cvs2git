@@ -1746,6 +1746,9 @@ win_line(wp, lnum, startrow, endrow)
 #ifdef USE_GUI
 		     && !gui.in_use
 #endif
+#ifdef MULTI_BYTE
+		     && !is_dbcs
+#endif
 					)
 	    {
 		if (screen_cur_col != Columns)

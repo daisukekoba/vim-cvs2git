@@ -520,7 +520,7 @@ xim_set_status_area()
 }
 
 #if defined(USE_GUI_X11) || defined(PROTO)
-# if defined(XtSpecificationRelease) && XtSpecificationRelease >= 6
+# if defined(XtSpecificationRelease) && XtSpecificationRelease >= 6 && !defined(sun)
 #  define USE_X11R6_XIM
 # endif
 
@@ -724,14 +724,18 @@ xim_real_init(x11_window, x11_display)
 		found = True;
 		break;
 	    }
-	    if ((xim_styles->supported_styles[i] & this_input_style)
-			== (this_input_style & ~XIMStatusArea))
-	    {
-		this_input_style &= ~XIMStatusArea;
-		found = True;
-		break;
-	    }
 	}
+	if (!found)
+	    for (i = 0; (unsigned short)i < xim_styles->count_styles; i++)
+	    {
+		if ((xim_styles->supported_styles[i] & this_input_style)
+			    == (this_input_style & ~XIMStatusArea))
+		{
+		    this_input_style &= ~XIMStatusArea;
+		    found = True;
+		    break;
+		}
+	    }
 
 	s = ns;
     }

@@ -1523,9 +1523,9 @@ clip_x11_request_selection(myShell, dpy)
     {
 	switch (i)
 	{
-	    case 0:  type = clipboard.xatom;
-	    case 1:  type = clipboard.xa_compound_text;
-	    case 2:  type = clipboard.xa_text;
+	    case 0:  type = clipboard.xatom;	break;
+	    case 1:  type = clipboard.xa_compound_text; break;
+	    case 2:  type = clipboard.xa_text;	break;
 	    default: type = XA_STRING;
 	}
 	XtGetSelectionValue(myShell, XA_PRIMARY, type,
