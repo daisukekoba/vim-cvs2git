@@ -3015,6 +3015,39 @@ write_lnum_adjust(offset)
 	write_no_eol_lnum += offset;
 }
 
+#if defined(TEMPDIRNAMES) || defined(PROTO)
+static char_u	*vim_tempdir = NULL;	/* Name of Vim's own temp dir. */
+static long	temp_count = 0;		/* Temp filename counter. */
+
+/*
+ * Delete the temp directory and all files it contains.
+ */
+    void
+vim_deltempdir()
+{
+    char_u	**files;
+    int		file_count;
+    int		i;
+
+    if (vim_tempdir != NULL)
+    {
+	sprintf((char *)NameBuff, "%s*", vim_tempdir);
+	if (gen_expand_wildcards(1, &NameBuff, &file_count, &files,
+					      EW_DIR|EW_FILE|EW_SILENT) == OK)
+	{
+	    for (i = 0; i < file_count; ++i)
+		mch_remove(files[i]);
+	    FreeWild(file_count, files);
+	}
+	gettail(NameBuff)[-1] = NUL;
+	(void)mch_rmdir(NameBuff);
+
+	vim_free(vim_tempdir);
+	vim_tempdir = NULL;
+    }
+}
+#endif
+
 /*
  * vim_tempname(): Return a unique name that can be used for a temp file.
  *
@@ -3027,65 +3060,113 @@ write_lnum_adjust(offset)
 vim_tempname(extra_char)
     int	    extra_char;	    /* character to use in the name instead of '?' */
 {
-#ifdef WIN32
-    char	szTempFile[_MAX_PATH+1];
-    char	buf4[4];
-#endif
 #ifdef USE_TMPNAM
     char_u	itmp[L_tmpnam];	/* use tmpnam() */
 #else
     char_u	itmp[TEMPNAMELEN];
 #endif
-#if defined(TEMPDIRNAMES) || !defined(USE_TMPNAM)
-    char_u	*p;
-#endif
 
 #ifdef TEMPDIRNAMES
     static char	*(tempdirs[]) = {TEMPDIRNAMES};
-    static int	first_dir = 0;
-    int		first_try = TRUE;
     int		i;
+    long	nr;
+    long	off;
+# ifndef EEXIST
+    struct stat	st;
+# endif
 
     /*
-     * Try a few places to put the temp file.
-     * To avoid waisting time with non-existing environment variables and
-     * directories, they are skipped next time.
+     * This will create a directory for private use by this instance of Vim.
+     * This is done once, and the same directory is used for all temp files.
+     * This method avoids security problems because of symlink attacks et al.
+     * It's also a bit faster, because we only need to check for an existing
+     * file when creating the directory and not for each temp file.
      */
-    for (i = first_dir; i < sizeof(tempdirs) / sizeof(char *); ++i)
+    if (vim_tempdir == NULL)
     {
-	/* expand $TMP, leave room for '/', "v?XXXXXX" and NUL */
-	expand_env((char_u *)tempdirs[i], itmp, TEMPNAMELEN - 10);
-	if (mch_isdir(itmp))		/* directory exists */
+	/*
+	 * Try the entries in TEMPDIRNAMES to create the temp directory.
+	 */
+	for (i = 0; i < sizeof(tempdirs) / sizeof(char *); ++i)
 	{
-	    if (first_try)
-		first_dir = i;		/* start here next time */
-	    first_try = FALSE;
+	    /* expand $TMP, leave room for "/v1100000/999999999" */
+	    expand_env((char_u *)tempdirs[i], itmp, TEMPNAMELEN - 20);
+	    if (mch_isdir(itmp))		/* directory exists */
+	    {
 # ifdef __EMX__
-	    /*
-	     * if $TMP contains a forward slash (perhaps because we're using
-	     * bash or tcsh, right Stefan?), don't add a backslash to the
-	     * directory before tacking on the file name; use a forward slash!
-	     * I first tried adding 2 backslashes, but somehow that didn't
-	     * work (something in the EMX system() ate them, I think).
-	     */
-	    if (vim_strchr(itmp, '/'))
-		STRCAT(itmp, "/");
-	    else
+		/* If $TMP contains a forward slash (perhaps using bash or
+		 * tcsh), don't add a backslash, use a forward slash!
+		 * Adding 2 backslashes didn't work. */
+		if (vim_strchr(itmp, '/') != NULL)
+		    STRCAT(itmp, "/");
+		else
 # endif
-		add_pathsep(itmp);
-	    STRCAT(itmp, TEMPNAME);
-	    if ((p = vim_strchr(itmp, '?')) != NULL)
-		*p = extra_char;
-	    if (mktemp((char *)itmp) == NULL)
-		continue;
-	    return vim_strsave(itmp);
+		    add_pathsep(itmp);
+
+		/* Get an arbitrary number of up to 6 digits.  When it's
+		 * unlikely that it already exists it will be faster,
+		 * otherwise it doesn't matter.  The use of mkdir() avoids any
+		 * security problems because of the predictable number. */
+		nr = (mch_get_pid() + (long)time(NULL)) % 1000000L;
+
+		/* Try up to 10000 different values until we find a name that
+		 * doesn't exist. */
+		for (off = 0; off < 10000L; ++off)
+		{
+		    sprintf((char *)itmp + STRLEN(itmp), "v%ld", nr + off);
+# ifndef EEXIST
+		    /* If mkdir() does not set errno to EEXIST, check for
+		     * existing file here.  There is a race condition then,
+		     * although it's fail-safe. */
+		    if (mch_stat((char *)itmp, &st) >= 0)
+			continue;
+# endif
+		    if (vim_mkdir(itmp, 0700) == 0)
+		    {
+			/* Directory was created, use this name. */
+# ifdef __EMX__
+			if (vim_strchr(itmp, '/') != NULL)
+			    STRCAT(itmp, "/");
+			else
+# endif
+			    add_pathsep(itmp);
+			/* Use the full path; When using the current directory
+			 * a ":cd" would confuse us. */
+			vim_tempdir = FullName_save(itmp, FALSE);
+			break;
+		    }
+# ifdef EEXIST
+		    /* If the mkdir() didn't fail because the file/dir exists,
+		     * we probably can't create any dir here, try another
+		     * place. */
+		    if (errno != EEXIST)
+# endif
+			break;
+		}
+		if (vim_tempdir != NULL)
+		    break;
+	    }
 	}
     }
+
+    if (vim_tempdir != NULL)
+    {
+	/* There is no need to check if the file exists, because we own the
+	 * directory and nobody else creates a file in it. */
+	sprintf((char *)itmp, "%s%ld", vim_tempdir, temp_count++);
+	return vim_strsave(itmp);
+    }
+
     return NULL;
 
 #else /* !TEMPDIRNAMES */
 
 # ifdef WIN32
+    char	szTempFile[_MAX_PATH + 1];
+    char	buf4[4];
+    char_u	*retval;
+    char_u	*p;
+
     STRCPY(itmp, "");
     if (GetTempPath(_MAX_PATH, szTempFile) == 0)
 	szTempFile[0] = NUL;	/* GetTempPath() failed, use current dir */
@@ -3095,12 +3176,26 @@ vim_tempname(extra_char)
 	return NULL;
     /* GetTempFileName() will create the file, we don't want that */
     (void)DeleteFile(itmp);
-# else
+
+    /* Backslashes in a temp file name cause problems when filtering with
+     * "sh".  NOTE: This also checks 'shellcmdflag' to help those people who
+     * didn't set 'shellslash'. */
+    retval = vim_strsave(itmp);
+    if (*p_shcf == '-' || p_ssl)
+	for (p = retval; *p; ++p)
+	    if (*p == '\\')
+		*p = '/';
+    return retval;
+
+# else /* WIN32 */
+
 #  ifdef USE_TMPNAM
     /* tmpnam() will make its own name */
     if (*tmpnam((char *)itmp) == NUL)
 	return NULL;
 #  else
+    char_u	*p;
+
 #   ifdef VMS_TEMPNAM
     /* mktemp() is not working on VMS.  It seems to be
      * a do-nothing function. Therefore we use tempnam().
@@ -3125,25 +3220,9 @@ vim_tempname(extra_char)
 	return NULL;
 #   endif
 #  endif
-# endif
+# endif /* WIN32 */
 
-# ifdef WIN32
-    {
-	char_u	*retval;
-
-	/* Backslashes in a temp file name cause problems when filtering with
-	 * "sh".  NOTE: This ignores 'shellslash' because forward slashes
-	 * always work here. */
-	retval = vim_strsave(itmp);
-	if (*p_shcf == '-')
-	    for (p = retval; *p; ++p)
-		if (*p == '\\')
-		    *p = '/';
-	return retval;
-    }
-# else
     return vim_strsave(itmp);
-# endif
 #endif /* !TEMPDIRNAMES */
 }
 

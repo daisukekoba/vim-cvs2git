@@ -567,6 +567,9 @@ ml_close_all(del_file)
 
     for (buf = firstbuf; buf != NULL; buf = buf->b_next)
 	ml_close(buf, del_file);
+#ifdef TEMPDIRNAMES
+    vim_deltempdir();	    /* delete created temp directory */
+#endif
 }
 
 /*
